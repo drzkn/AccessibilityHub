@@ -1,4 +1,5 @@
 import type { AnalysisTarget, AnalysisOptions, AnalysisResult } from '@/types/index.js';
+import { createAdapterLogger } from '@/utils/logger.js';
 
 export interface AdapterConfig {
   timeout?: number;
@@ -24,6 +25,7 @@ export abstract class BaseAdapter implements Adapter {
   abstract readonly version: string;
 
   protected config: AdapterConfig;
+  protected logger: ReturnType<typeof createAdapterLogger>;
 
   constructor(config: AdapterConfig = {}) {
     this.config = {
@@ -31,6 +33,7 @@ export abstract class BaseAdapter implements Adapter {
       maxRetries: 1,
       ...config
     };
+    this.logger = createAdapterLogger(this.constructor.name);
   }
 
   abstract analyze(
@@ -41,5 +44,6 @@ export abstract class BaseAdapter implements Adapter {
   abstract isAvailable(): Promise<boolean>;
 
   async dispose(): Promise<void> {
+    this.logger.debug('Adapter disposed');
   }
 }

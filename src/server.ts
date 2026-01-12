@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { logger } from "@/utils/logger.js";
 
 const server = new McpServer({
   name: 'mcp-a11y-server',
@@ -7,11 +8,19 @@ const server = new McpServer({
 });
 
 async function main(): Promise<void> {
+  logger.info('Starting MCP A11y Server', {
+    version: '0.1.0'
+  });
+
   const transport = new StdioServerTransport();
   await server.connect(transport);
+
+  logger.info('MCP A11y Server connected and ready');
 }
 
 main().catch((error: unknown) => {
-  console.error('Failed to start MCP server:', error);
+  logger.error('Failed to start MCP server', {
+    error: error instanceof Error ? error : new Error(String(error))
+  });
   process.exit(1);
 });

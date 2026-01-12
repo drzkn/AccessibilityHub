@@ -1,4 +1,5 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { createToolLogger, generateRequestId } from '@/utils/logger.js';
 
 export interface ToolDefinition {
   name: string;
@@ -31,4 +32,53 @@ export function createJsonResponse<T>(data: T, isError = false): ToolResponse {
 export function createErrorResponse(error: unknown): ToolResponse {
   const message = error instanceof Error ? error.message : String(error);
   return createTextResponse(`Error: ${message}`, true);
+}
+
+export type ToolHandler<TInput> = (
+  input: TInput,
+  context: ToolExecutionContext
+) => Promise<ToolResponse>;
+
+export interface ToolExecutionContext {
+  requestId: string;
+  logger: ReturnType<typeof createToolLogger>;
+}
+
+export function withToolContext<TInput>(
+  toolName: string,
+  handler: ToolHandler<TInput>
+): (input: TInput) => Promise<ToolResponse> {
+  const toolLogger = createToolLogger(toolName);
+
+  return async (input: TInput): Promise<ToolResponse> => {
+    const requestId = generateRequestId();
+
+    toolLogger.info('Tool execution started', { requestId });
+    const startTime = Date.now();
+
+    try {
+      const result = await handler(input, {
+        requestId,
+        logger: toolLogger
+      });
+
+      const duration = Date.now() - startTime;
+      toolLogger.info('Tool execution completed', {
+        requestId,
+        durationMs: duration,
+        isError: result.isError ?? false
+      });
+
+      return result;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      toolLogger.error('Tool execution failed', {
+        requestId,
+        durationMs: duration,
+        error: error instanceof Error ? error : new Error(String(error))
+      });
+
+      return createErrorResponse(error);
+    }
+  };
 }
