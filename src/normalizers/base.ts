@@ -24,10 +24,10 @@ export abstract class BaseNormalizer<TRawResult = unknown> implements Normalizer
 
   protected mapImpactToSeverity(impact: string | undefined): Severity {
     const mapping: Record<string, Severity> = {
-      'critical': 'critical',
-      'serious': 'serious',
-      'moderate': 'moderate',
-      'minor': 'minor'
+      critical: 'critical',
+      serious: 'serious',
+      moderate: 'moderate',
+      minor: 'minor',
     };
     return mapping[impact ?? ''] ?? 'moderate';
   }
@@ -36,7 +36,7 @@ export abstract class BaseNormalizer<TRawResult = unknown> implements Normalizer
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash;
     }
     return Math.abs(hash);

@@ -9,7 +9,9 @@
     "dev": "tsup --watch",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "keywords": [
     "mcp",
@@ -32,6 +34,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
+    "prettier": "^3.7.4",
     "tsup": "^8.3.0",
     "typescript": "^5.7.0"
   }

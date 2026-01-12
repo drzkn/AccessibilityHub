@@ -12,17 +12,20 @@ export interface LogContext {
 
 const logLevel = (process.env['LOG_LEVEL'] as LogLevel) ?? 'info';
 
-const baseLogger = pino({
-  level: logLevel,
-  base: {
-    service: 'mcp-a11y-server',
-    version: '0.1.0'
+const baseLogger = pino(
+  {
+    level: logLevel,
+    base: {
+      service: 'mcp-a11y-server',
+      version: '0.1.0',
+    },
+    timestamp: pino.stdTimeFunctions.isoTime,
+    formatters: {
+      level: (label) => ({ level: label }),
+    },
   },
-  timestamp: pino.stdTimeFunctions.isoTime,
-  formatters: {
-    level: (label) => ({ level: label })
-  }
-}, pino.destination(2));
+  pino.destination(2)
+);
 
 export const logger = {
   debug(message: string, context?: LogContext): void {
@@ -40,18 +43,21 @@ export const logger = {
   error(message: string, context?: LogContext & { error?: Error }): void {
     const { error, ...rest } = context ?? {};
     if (error) {
-      baseLogger.error({
-        ...rest,
-        err: {
-          message: error.message,
-          name: error.name,
-          stack: error.stack
-        }
-      }, message);
+      baseLogger.error(
+        {
+          ...rest,
+          err: {
+            message: error.message,
+            name: error.name,
+            stack: error.stack,
+          },
+        },
+        message
+      );
     } else {
       baseLogger.error(rest, message);
     }
-  }
+  },
 };
 
 export function createToolLogger(toolName: string) {
@@ -70,7 +76,7 @@ export function createToolLogger(toolName: string) {
 
     error(message: string, context?: Omit<LogContext, 'tool'> & { error?: Error }): void {
       logger.error(message, { ...context, tool: toolName });
-    }
+    },
   };
 }
 
@@ -90,7 +96,7 @@ export function createAdapterLogger(adapterName: string) {
 
     error(message: string, context?: Omit<LogContext, 'adapter'> & { error?: Error }): void {
       logger.error(message, { ...context, adapter: adapterName });
-    }
+    },
   };
 }
 
@@ -110,7 +116,7 @@ export function createRequestLogger(requestId: string) {
 
     error(message: string, context?: Omit<LogContext, 'requestId'> & { error?: Error }): void {
       logger.error(message, { ...context, requestId });
-    }
+    },
   };
 }
 

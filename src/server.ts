@@ -1,15 +1,15 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { logger } from "@/utils/logger.js";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { logger } from '@/utils/logger.js';
 
 const server = new McpServer({
   name: 'mcp-a11y-server',
-  version: '0.1.0'
+  version: '0.1.0',
 });
 
 async function main(): Promise<void> {
   logger.info('Starting MCP A11y Server', {
-    version: '0.1.0'
+    version: '0.1.0',
   });
 
   const transport = new StdioServerTransport();
@@ -20,7 +20,7 @@ async function main(): Promise<void> {
 
 main().catch((error: unknown) => {
   logger.error('Failed to start MCP server', {
-    error: error instanceof Error ? error : new Error(String(error))
+    error: error instanceof Error ? error : new Error(String(error)),
   });
   process.exit(1);
 });

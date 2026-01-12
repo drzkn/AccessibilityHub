@@ -18,14 +18,14 @@ export interface ToolResponse {
 export function createTextResponse(text: string, isError = false): ToolResponse {
   return {
     content: [{ type: 'text', text }],
-    isError
+    isError,
   };
 }
 
 export function createJsonResponse<T>(data: T, isError = false): ToolResponse {
   return {
     content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
-    isError
+    isError,
   };
 }
 
@@ -59,14 +59,14 @@ export function withToolContext<TInput>(
     try {
       const result = await handler(input, {
         requestId,
-        logger: toolLogger
+        logger: toolLogger,
       });
 
       const duration = Date.now() - startTime;
       toolLogger.info('Tool execution completed', {
         requestId,
         durationMs: duration,
-        isError: result.isError ?? false
+        isError: result.isError ?? false,
       });
 
       return result;
@@ -75,7 +75,7 @@ export function withToolContext<TInput>(
       toolLogger.error('Tool execution failed', {
         requestId,
         durationMs: duration,
-        error: error instanceof Error ? error : new Error(String(error))
+        error: error instanceof Error ? error : new Error(String(error)),
       });
 
       return createErrorResponse(error);

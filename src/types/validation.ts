@@ -24,13 +24,13 @@ export function validate<T>(schema: ZodSchema<T>, data: unknown): ValidationResu
   if (result.success) {
     return {
       success: true,
-      data: result.data
+      data: result.data,
     };
   }
 
   return {
     success: false,
-    errors: formatZodErrors(result.error)
+    errors: formatZodErrors(result.error),
   };
 }
 
@@ -42,7 +42,7 @@ export function formatZodErrors(error: ZodError): ValidationError[] {
   return error.errors.map((err) => ({
     path: err.path.join('.'),
     message: err.message,
-    code: err.code
+    code: err.code,
   }));
 }
 
@@ -79,7 +79,7 @@ export function createInputValidator<T>(schema: ZodSchema<T>) {
         return defaults as Partial<T>;
       }
       return {};
-    }
+    },
   };
 }
 
@@ -95,9 +95,11 @@ export function createOutputValidator<T>(schema: ZodSchema<T>) {
     ensureValid: (data: T): T => {
       const result = schema.safeParse(data);
       if (!result.success) {
-        throw new Error(`Output validation failed: ${formatValidationErrorsForMcp(formatZodErrors(result.error))}`);
+        throw new Error(
+          `Output validation failed: ${formatValidationErrorsForMcp(formatZodErrors(result.error))}`
+        );
       }
       return result.data;
-    }
+    },
   };
 }

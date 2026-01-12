@@ -30,9 +30,8 @@ pnpm start      # Levanta servidor
 ## Configuración
 
 | Variable    | Default | Descripción                      |
-|-------------|---------|----------------------------------|
+| ----------- | ------- | -------------------------------- |
 | `LOG_LEVEL` | `info`  | `debug`, `info`, `warn`, `error` |
-
 
 ## Requisitos
 

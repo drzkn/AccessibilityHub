@@ -1,13 +1,13 @@
 import {
   AccessibilityIssueSchema,
   AnalysisResultSchema,
-  CombinedAnalysisResultSchema
+  CombinedAnalysisResultSchema,
 } from './accessibility.js';
 import {
   AxeToolInputSchema,
   Pa11yToolInputSchema,
   ESLintA11yToolInputSchema,
-  CombinedAnalysisInputSchema
+  CombinedAnalysisInputSchema,
 } from './tool-inputs.js';
 import { createInputValidator, createOutputValidator } from './validation.js';
 
@@ -27,5 +27,5 @@ export {
   CombinedAnalysisInputSchema,
   AccessibilityIssueSchema,
   AnalysisResultSchema,
-  CombinedAnalysisResultSchema
+  CombinedAnalysisResultSchema,
 };
