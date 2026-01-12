@@ -1,18 +1,30 @@
 {
-  "name": "01-start",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "mcp-a11y-server",
+  "version": "0.1.0",
+  "description": "MCP Server for web accessibility tools orchestration",
+  "main": "dist/server.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
   },
-  "keywords": [],
+  "keywords": ["mcp", "accessibility", "a11y", "wcag", "axe-core", "pa11y"],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.26.2",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.25.1",
     "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.7.0"
   }
 }
