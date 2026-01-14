@@ -31,6 +31,3 @@ coverage/
 tmp/
 temp/
 *.tmp
-
-# Cursor settings
-.cursor/

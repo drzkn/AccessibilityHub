@@ -4,7 +4,7 @@ import { logger } from '@/utils/logger.js';
 import { analyzeWithAxeTool, disposeAxeAdapter } from '@/tools/axe.js';
 
 const server = new McpServer({
-  name: 'mcp-a11y-server',
+  name: 'ai-ccesibility',
   version: '0.1.0',
 });
 
@@ -14,7 +14,7 @@ function registerTools(): void {
 }
 
 async function main(): Promise<void> {
-  logger.info('Starting MCP A11y Server', {
+  logger.info('Starting AI-ccesibility Server', {
     version: '0.1.0',
   });
 
@@ -23,11 +23,11 @@ async function main(): Promise<void> {
   const transport = new StdioServerTransport();
   await server.connect(transport);
 
-  logger.info('MCP A11y Server connected and ready');
+  logger.info('AI-ccesibility Server connected and ready');
 }
 
 async function shutdown(): Promise<void> {
-  logger.info('Shutting down MCP A11y Server');
+  logger.info('Shutting down AI-ccesibility Server');
   await disposeAxeAdapter();
   process.exit(0);
 }

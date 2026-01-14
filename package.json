@@ -1,7 +1,7 @@
 {
-  "name": "mcp-a11y-server",
+  "name": "ai-ccesibility",
   "version": "0.1.0",
-  "description": "MCP Server for web accessibility tools orchestration",
+  "description": "AI-ccesibility - MCP Server for web accessibility tools orchestration",
   "main": "dist/server.js",
   "type": "module",
   "scripts": {
@@ -14,7 +14,8 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "inspect": "pnpm build && mcp-inspector node dist/server.js"
   },
   "keywords": [
     "mcp",
@@ -39,6 +40,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@modelcontextprotocol/inspector": "^0.18.0",
     "@types/node": "^22.10.0",
     "@vitest/coverage-istanbul": "^4.0.17",
     "@vitest/coverage-v8": "^4.0.17",

@@ -16,7 +16,7 @@ const baseLogger = pino(
   {
     level: logLevel,
     base: {
-      service: 'mcp-a11y-server',
+      service: 'ai-ccesibility',
       version: '0.1.0',
     },
     timestamp: pino.stdTimeFunctions.isoTime,
