@@ -1,7 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { AxeAdapter } from '@/adapters/axe.js';
-import { AxeToolInputSchema, type AxeToolInput } from '@/types/tool-inputs.js';
+import { Pa11yAdapter } from '@/adapters/pa11y.js';
+import { Pa11yToolInputSchema, type Pa11yToolInput } from '@/types/tool-inputs.js';
 import type { AnalysisTarget, AnalysisOptions } from '@/types/analysis.js';
 import type { AnalysisResult } from '@/types/accessibility.js';
 import {
@@ -12,12 +12,11 @@ import {
   withToolContext,
 } from './base.js';
 
-let sharedAdapter: AxeAdapter | null = null;
+let sharedAdapter: Pa11yAdapter | null = null;
 
-function getAdapter(): AxeAdapter {
+function getAdapter(): Pa11yAdapter {
   if (!sharedAdapter) {
-    sharedAdapter = new AxeAdapter({
-      headless: true,
+    sharedAdapter = new Pa11yAdapter({
       timeout: 30000,
     });
   }
@@ -39,7 +38,7 @@ process.on('SIGTERM', () => {
   disposeAdapter().finally(() => process.exit(0));
 });
 
-function buildAnalysisTarget(input: AxeToolInput): AnalysisTarget {
+function buildAnalysisTarget(input: Pa11yToolInput): AnalysisTarget {
   if (input.url) {
     return {
       type: 'url',
@@ -63,16 +62,27 @@ function buildAnalysisTarget(input: AxeToolInput): AnalysisTarget {
   };
 }
 
-function buildAnalysisOptions(input: AxeToolInput): AnalysisOptions {
+function buildAnalysisOptions(input: Pa11yToolInput): AnalysisOptions {
+  const standardMap: Record<string, 'A' | 'AA' | 'AAA'> = {
+    'WCAG2A': 'A',
+    'WCAG2AA': 'AA',
+    'WCAG2AAA': 'AAA',
+    'WCAG21A': 'A',
+    'WCAG21AA': 'AA',
+    'WCAG21AAA': 'AAA'
+  };
+
+  const wcagLevel = input.options?.standard
+    ? standardMap[input.options.standard] ?? 'AA'
+    : 'AA';
+
   return {
-    wcagLevel: input.options?.wcagLevel ?? 'AA',
-    rules: input.options?.rules,
-    excludeRules: input.options?.excludeRules,
-    includeWarnings: input.options?.includeIncomplete ?? false,
+    wcagLevel,
+    includeWarnings: input.options?.includeWarnings ?? true,
   };
 }
 
-interface AxeToolOutput {
+interface Pa11yToolOutput {
   success: boolean;
   target: string;
   issueCount: number;
@@ -83,7 +93,7 @@ interface AxeToolOutput {
   error?: string | undefined;
 }
 
-function formatOutput(result: AnalysisResult): AxeToolOutput {
+function formatOutput(result: AnalysisResult): Pa11yToolOutput {
   return {
     success: result.success,
     target: result.target,
@@ -96,13 +106,13 @@ function formatOutput(result: AnalysisResult): AxeToolOutput {
   };
 }
 
-const handleAxeAnalysis = withToolContext<AxeToolInput>(
-  'analyze-with-axe',
+const handlePa11yAnalysis = withToolContext<Pa11yToolInput>(
+  'analyze-with-pa11y',
   async (input, context): Promise<ToolResponse> => {
     context.logger.debug('Building analysis configuration', {
       hasUrl: !!input.url,
       hasHtml: !!input.html,
-      wcagLevel: input.options?.wcagLevel ?? 'AA',
+      standard: input.options?.standard ?? 'WCAG21AA',
     });
 
     const adapter = getAdapter();
@@ -110,14 +120,14 @@ const handleAxeAnalysis = withToolContext<AxeToolInput>(
     const isAvailable = await adapter.isAvailable();
     if (!isAvailable) {
       return createErrorResponse(
-        new Error('Axe adapter is not available. Browser may have failed to launch.')
+        new Error('Pa11y adapter is not available. Browser may have failed to launch.')
       );
     }
 
     const target = buildAnalysisTarget(input);
     const options = buildAnalysisOptions(input);
 
-    context.logger.info('Starting axe-core analysis', {
+    context.logger.info('Starting Pa11y analysis', {
       targetType: target.type,
       target: target.type === 'url' ? target.value : '[html content]',
     });
@@ -135,22 +145,25 @@ const handleAxeAnalysis = withToolContext<AxeToolInput>(
   }
 );
 
-const AxeToolMcpInputSchema = z.object({
+const Pa11yToolMcpInputSchema = z.object({
   url: z.string().url().optional().describe('URL of the page to analyze'),
   html: z.string().min(1).optional().describe('Raw HTML content to analyze'),
   options: z
     .object({
-      wcagLevel: z
-        .enum(['A', 'AA', 'AAA'])
-        .default('AA')
-        .describe('WCAG conformance level to check'),
-      rules: z.array(z.string()).optional().describe('Specific axe rule IDs to run'),
-      excludeRules: z.array(z.string()).optional().describe('Axe rule IDs to exclude'),
-      includeIncomplete: z
+      standard: z
+        .enum(['WCAG2A', 'WCAG2AA', 'WCAG2AAA', 'WCAG21A', 'WCAG21AA', 'WCAG21AAA'])
+        .default('WCAG21AA')
+        .describe('Accessibility standard to test against'),
+      includeWarnings: z
+        .boolean()
+        .default(true)
+        .describe('Include warnings in results'),
+      includeNotices: z
         .boolean()
         .default(false)
-        .describe('Include incomplete/needs-review results'),
-      selector: z.string().optional().describe('CSS selector to scope analysis'),
+        .describe('Include notices in results'),
+      rootElement: z.string().optional().describe('CSS selector for root element to test'),
+      hideElements: z.string().optional().describe('CSS selector for elements to hide'),
       browser: z
         .object({
           waitForSelector: z.string().optional().describe('CSS selector to wait for'),
@@ -167,34 +180,35 @@ const AxeToolMcpInputSchema = z.object({
     .optional(),
 });
 
-export const analyzeWithAxeTool: ToolDefinition = {
-  name: 'analyze-with-axe',
-  description: `Analyze a web page or HTML content for accessibility issues using axe-core.
+export const analyzeWithPa11yTool: ToolDefinition = {
+  name: 'analyze-with-pa11y',
+  description: `Analyze a web page or HTML content for accessibility issues using Pa11y.
 
-Returns accessibility violations and incomplete checks based on WCAG guidelines.
+Returns accessibility violations based on WCAG guidelines.
 
 Input options
 - url: URL of the page to analyze
 - html: Raw HTML content to analyze (alternative to url)
-- options.wcagLevel: WCAG level to check (A, AA, or AAA). Default: AA
-- options.rules: Specific axe rule IDs to run
-- options.excludeRules: Axe rule IDs to exclude
-- options.includeIncomplete: Include needs-review results. Default: false
+- options.standard: WCAG standard to test against (WCAG2A, WCAG2AA, WCAG2AAA, WCAG21A, WCAG21AA, WCAG21AAA). Default: WCAG21AA
+- options.includeWarnings: Include warnings in results. Default: true
+- options.includeNotices: Include notices in results. Default: false
+- options.rootElement: CSS selector for root element to test
+- options.hideElements: CSS selector for elements to hide from testing
 - options.browser.waitForSelector: CSS selector to wait for before analysis
 - options.browser.viewport: Browser viewport dimensions
 
-Output
+Output:
 - issues: Array of accessibility issues found
 - summary: Issue counts by severity and WCAG principle
-- metadata: Tool version and browser info`,
+- metadata: Tool version and page info`,
 
   register(server: McpServer): void {
     server.tool(
       this.name,
       this.description,
-      AxeToolMcpInputSchema.shape,
+      Pa11yToolMcpInputSchema.shape,
       async (input): Promise<{ content: Array<{ type: 'text'; text: string }> }> => {
-        const parseResult = AxeToolInputSchema.safeParse(input);
+        const parseResult = Pa11yToolInputSchema.safeParse(input);
 
         if (!parseResult.success) {
           const errors = parseResult.error.errors
@@ -204,11 +218,11 @@ Output
           return { content: response.content };
         }
 
-        const response = await handleAxeAnalysis(parseResult.data);
+        const response = await handlePa11yAnalysis(parseResult.data);
         return { content: response.content };
       }
     );
   },
 };
 
-export { disposeAdapter as disposeAxeAdapter };
+export { disposeAdapter as disposePa11yAdapter };

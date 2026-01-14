@@ -13,6 +13,7 @@ export interface ToolResponse {
     text: string;
   }>;
   isError?: boolean;
+  [key: string]: unknown;
 }
 
 export function createTextResponse(text: string, isError = false): ToolResponse {

@@ -1,21 +1,35 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { logger } from '@/utils/logger.js';
-import { analyzeWithAxeTool, disposeAxeAdapter } from '@/tools/axe.js';
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { logger } from "@/utils/logger.js";
+import {
+  analyzeWithAxeTool,
+  analyzeWithPa11yTool,
+  analyzeWithESLintTool,
+  disposeAxeAdapter,
+  disposePa11yAdapter,
+  disposeESLintAdapter
+} from "@/tools/index.js";
 
 const server = new McpServer({
-  name: 'ai-ccesibility',
-  version: '0.1.0',
+  name: 'mcp-a11y-server',
+  version: '0.1.0'
 });
 
 function registerTools(): void {
   analyzeWithAxeTool.register(server);
   logger.info('Registered tool: analyze-with-axe');
+
+  analyzeWithPa11yTool.register(server);
+  logger.info('Registered tool: analyze-with-pa11y');
+
+  analyzeWithESLintTool.register(server);
+  logger.info('Registered tool: analyze-with-eslint');
 }
 
 async function main(): Promise<void> {
   logger.info('Starting AI-ccesibility Server', {
     version: '0.1.0',
+    tools: ['analyze-with-axe', 'analyze-with-pa11y', 'analyze-with-eslint']
   });
 
   registerTools();
@@ -28,7 +42,14 @@ async function main(): Promise<void> {
 
 async function shutdown(): Promise<void> {
   logger.info('Shutting down AI-ccesibility Server');
-  await disposeAxeAdapter();
+
+  await Promise.all([
+    disposeAxeAdapter(),
+    disposePa11yAdapter(),
+    disposeESLintAdapter()
+  ]);
+
+  logger.info('All adapters disposed');
   process.exit(0);
 }
 
@@ -37,7 +58,7 @@ process.on('SIGTERM', shutdown);
 
 main().catch((error: unknown) => {
   logger.error('Failed to start MCP server', {
-    error: error instanceof Error ? error : new Error(String(error)),
+    error: error instanceof Error ? error : new Error(String(error))
   });
   process.exit(1);
 });

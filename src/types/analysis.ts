@@ -22,8 +22,8 @@ export const AnalysisTargetSchema = z.object({
 export type AnalysisTarget = z.infer<typeof AnalysisTargetSchema>;
 
 export const AnalysisOptionsSchema = z.object({
-  includeWarnings: z.boolean().default(true),
-  wcagLevel: z.enum(['A', 'AA', 'AAA']).default('AA'),
+  includeWarnings: z.boolean().optional().default(true),
+  wcagLevel: z.enum(['A', 'AA', 'AAA']).optional().default('AA'),
   rules: z.array(z.string()).optional(),
   excludeRules: z.array(z.string()).optional(),
 });
