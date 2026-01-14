@@ -5,9 +5,11 @@ import {
   analyzeWithAxeTool,
   analyzeWithPa11yTool,
   analyzeWithESLintTool,
+  analyzeAllTool,
   disposeAxeAdapter,
   disposePa11yAdapter,
-  disposeESLintAdapter
+  disposeESLintAdapter,
+  disposeAnalyzeAllAdapters
 } from "@/tools/index.js";
 
 const server = new McpServer({
@@ -24,12 +26,15 @@ function registerTools(): void {
 
   analyzeWithESLintTool.register(server);
   logger.info('Registered tool: analyze-with-eslint');
+
+  analyzeAllTool.register(server);
+  logger.info('Registered tool: analyze-all');
 }
 
 async function main(): Promise<void> {
   logger.info('Starting AI-ccesibility Server', {
     version: '0.1.0',
-    tools: ['analyze-with-axe', 'analyze-with-pa11y', 'analyze-with-eslint']
+    tools: ['analyze-with-axe', 'analyze-with-pa11y', 'analyze-with-eslint', 'analyze-all']
   });
 
   registerTools();
@@ -46,7 +51,8 @@ async function shutdown(): Promise<void> {
   await Promise.all([
     disposeAxeAdapter(),
     disposePa11yAdapter(),
-    disposeESLintAdapter()
+    disposeESLintAdapter(),
+    disposeAnalyzeAllAdapters()
   ]);
 
   logger.info('All adapters disposed');

@@ -123,12 +123,11 @@ export const CombinedAnalysisInputSchema = z
   .object({
     url: UrlSchema.optional(),
     html: HtmlSchema.optional(),
-    files: z.array(FilePathSchema).optional().describe('Vue files for static analysis'),
     tools: z
-      .array(z.enum(['axe-core', 'pa11y', 'eslint-vuejs-a11y']))
+      .array(z.enum(['axe-core', 'pa11y']))
       .min(1)
       .default(['axe-core', 'pa11y'])
-      .describe('Tools to run'),
+      .describe('Tools to run for web analysis'),
     options: z
       .object({
         wcagLevel: WCAGLevelSchema.default('AA'),
@@ -141,12 +140,9 @@ export const CombinedAnalysisInputSchema = z
       .optional(),
   })
   .refine(
-    (data) =>
-      data.url !== undefined ||
-      data.html !== undefined ||
-      (data.files !== undefined && data.files.length > 0),
-    { message: 'Provide url, html, or files to analyze' }
+    (data) => data.url !== undefined || data.html !== undefined,
+    { message: 'Provide url or html to analyze' }
   )
-  .describe('Input for combined multi-tool accessibility analysis');
+  .describe('Input for combined web accessibility analysis (axe-core + Pa11y)');
 
 export type CombinedAnalysisInput = z.infer<typeof CombinedAnalysisInputSchema>;

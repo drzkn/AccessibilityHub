@@ -55,6 +55,40 @@ Analiza una página web o contenido HTML para detectar problemas de accesibilida
 }
 ```
 
+### `analyze-with-pa11y`
+
+Analiza una página web o contenido HTML usando Pa11y.
+
+**Parámetros similares a axe**, con `options.standard` para elegir el estándar WCAG (WCAG2AA, WCAG21AA, etc.).
+
+### `analyze-with-eslint`
+
+Analiza archivos Vue.js para problemas de accesibilidad mediante análisis estático.
+
+**Parámetros:**
+- `files`: Array de rutas de archivos .vue
+- `directory`: Directorio a analizar recursivamente
+- `code`: Código Vue inline a analizar
+
+### `analyze-all` ⭐
+
+**Tool de síntesis para análisis web** que ejecuta axe-core y Pa11y en paralelo y combina los resultados.
+
+**Parámetros:**
+- `url` o `html`: Target web a analizar (requerido)
+- `tools`: Array de tools a ejecutar (default: `['axe-core', 'pa11y']`)
+- `options.deduplicateResults`: Eliminar issues duplicados (default: `true`)
+- `options.wcagLevel`: Nivel WCAG (default: `'AA'`)
+
+**Respuesta incluye:**
+- `issues`: Issues combinados y deduplicados
+- `issuesByWCAG`: Issues agrupados por criterio WCAG
+- `summary.byTool`: Conteo de issues por herramienta
+- `individualResults`: Resultados completos de cada tool
+- `deduplicatedCount`: Número de duplicados eliminados
+
+**Nota:** Para análisis de código Vue, usa `analyze-with-eslint` por separado. Esta herramienta está especializada en análisis web dinámico.
+
 ## Estructura del Proyecto
 
 ```
@@ -131,8 +165,10 @@ Añade el servidor a tu configuración:
 > ⚠️ Reemplaza `<RUTA_AL_PROYECTO>` con la ruta absoluta a tu proyecto
 
 Luego puedes usar prompts como:
-- "Analiza la accesibilidad de https://example.com"
+- "Analiza la accesibilidad de https://example.com con axe-core y Pa11y"
 - "Revisa este HTML para problemas de accesibilidad: `<img src='foto.jpg'>`"
+- "Analiza los archivos Vue en src/components/ para problemas de accesibilidad" (usa analyze-with-eslint)
+- "Compara los resultados de axe-core y Pa11y en mi landing page" (usa analyze-all)
 
 ## Configuración
 
@@ -152,5 +188,7 @@ Luego puedes usar prompts como:
 - `puppeteer` - Control de navegador headless
 - `@axe-core/puppeteer` - Integración axe-core con Puppeteer
 - `axe-core` - Motor de análisis de accesibilidad
+- `pa11y` - Herramienta de testing de accesibilidad
+- `eslint` + `eslint-plugin-vuejs-accessibility` - Linting estático de Vue.js
 - `zod` - Validación de schemas
 - `pino` - Logging estructurado
