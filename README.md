@@ -2,6 +2,12 @@
 
 Servidor MCP para orquestación de herramientas de accesibilidad web (axe-core, Pa11y, eslint-plugin-vuejs-accessibility).
 
+## 📚 Documentación
+
+- **[USAGE.md](./USAGE.md)** - Guía completa de uso, workflows y prompts efectivos
+- **[EXAMPLES.md](./EXAMPLES.md)** - Ejemplos concretos de inputs/outputs para cada herramienta
+- **[README.md](./README.md)** - Este archivo (configuración y reference rápida)
+
 ## Herramientas Disponibles
 
 ### `analyze-with-axe`
@@ -89,20 +95,53 @@ Analiza archivos Vue.js para problemas de accesibilidad mediante análisis está
 
 **Nota:** Para análisis de código Vue, usa `analyze-with-eslint` por separado. Esta herramienta está especializada en análisis web dinámico.
 
+## Contexto Humano Enriquecido ✨
+
+Todos los issues incluyen automáticamente:
+
+- **Descripción expandida** del criterio WCAG violado
+- **Impacto en usuarios reales** con ejemplos concretos
+- **Usuarios afectados** (screen-reader, keyboard-only, low-vision, etc.)
+- **Prioridad de remediación** (critical, high, medium, low)
+- **Esfuerzo de corrección** (low, medium, high)
+- **Soluciones sugeridas** paso a paso
+
+Ejemplo de issue enriquecido:
+```json
+{
+  "ruleId": "image-alt",
+  "severity": "serious",
+  "humanContext": "**Contenido no textual (WCAG 1.1.1 - Nivel A)**\n\nLos usuarios de lectores de pantalla...",
+  "suggestedActions": ["Añadir atributo alt descriptivo a imágenes", ...],
+  "affectedUsers": ["screen-reader", "low-vision"],
+  "priority": "critical",
+  "remediationEffort": "low"
+}
+```
+
+Los datos WCAG se mantienen en `src/data/wcag-criteria.json` y son fácilmente actualizables.
+
 ## Estructura del Proyecto
 
 ```
 src/
 ├── server.ts           # Entry point MCP
+├── data/
+│   └── wcag-criteria.json  # Base de conocimiento WCAG (10 criterios)
 ├── adapters/
 │   ├── base.ts         # Clase base para adaptadores
-│   └── axe.ts          # Adaptador axe-core con Puppeteer
+│   ├── axe.ts          # Adaptador axe-core con Puppeteer
+│   ├── pa11y.ts        # Adaptador Pa11y
+│   └── eslint.ts       # Adaptador ESLint Vue a11y
 ├── tools/
 │   ├── base.ts         # Utilidades para tools MCP
-│   └── axe.ts          # Tool analyze-with-axe
+│   ├── axe.ts          # Tool analyze-with-axe
+│   ├── pa11y.ts        # Tool analyze-with-pa11y
+│   ├── eslint.ts       # Tool analyze-with-eslint
+│   └── analyze-all.ts  # Tool de síntesis multi-herramienta
 ├── types/              # Schemas Zod (inputs, outputs, validación)
 ├── normalizers/        # Transformación a formato unificado
-└── utils/              # Logger (pino → stderr)
+└── utils/              # Logger, contexto WCAG
 
 tests/
 ├── adapters/           # Tests unitarios de adaptadores

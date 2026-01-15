@@ -144,7 +144,6 @@ function buildCombinedSummary(
   const byTool: Record<ToolSource, number> = {
     'axe-core': 0,
     'pa11y': 0,
-    'eslint-vuejs-a11y': 0
   };
 
   const byRule: Record<string, number> = {};

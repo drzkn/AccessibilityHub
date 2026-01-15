@@ -33,7 +33,8 @@
       "@/tools/*": ["tools/*"],
       "@/adapters/*": ["adapters/*"],
       "@/normalizers/*": ["normalizers/*"],
-      "@/utils/*": ["utils/*"]
+      "@/utils/*": ["utils/*"],
+      "@/data/*": ["data/*"]
     }
   },
   "include": ["src/**/*.ts"],

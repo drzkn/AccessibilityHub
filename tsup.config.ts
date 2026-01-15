@@ -18,6 +18,7 @@ export default defineConfig({
       '@/adapters': './src/adapters',
       '@/normalizers': './src/normalizers',
       '@/utils': './src/utils',
+      '@/data': './src/data',
     };
   },
 });

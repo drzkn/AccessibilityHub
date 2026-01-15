@@ -22,10 +22,10 @@ export class Pa11yNormalizer extends BaseNormalizer<Pa11yIssue[]> {
   private normalizeIssue(issue: Pa11yIssue, context: NormalizerContext): AccessibilityIssue {
     const wcagInfo = this.parseWcagCode(issue.code);
 
-    return {
+    const baseIssue = {
       id: this.generateIssueId('pa11y', issue.code, issue.selector),
       ruleId: issue.code,
-      tool: 'pa11y',
+      tool: 'pa11y' as const,
       severity: this.mapTypeToSeverity(issue.type),
       wcag: wcagInfo,
       location: {
@@ -36,6 +36,8 @@ export class Pa11yNormalizer extends BaseNormalizer<Pa11yIssue[]> {
       message: issue.message,
       confidence: issue.type === 'error' ? 1 : 0.8
     };
+
+    return this.enrichWithHumanContext(baseIssue) as AccessibilityIssue;
   }
 
   private mapTypeToSeverity(type: 'error' | 'warning' | 'notice'): Severity {

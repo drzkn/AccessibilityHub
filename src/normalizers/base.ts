@@ -1,4 +1,5 @@
 import type { AccessibilityIssue, ToolSource, Severity } from '@/types/index.js';
+import { getWCAGContext, enrichIssueWithContext } from '@/utils/wcag-context.js';
 
 export interface NormalizerContext {
   tool: ToolSource;
@@ -30,6 +31,28 @@ export abstract class BaseNormalizer<TRawResult = unknown> implements Normalizer
       minor: 'minor',
     };
     return mapping[impact ?? ''] ?? 'moderate';
+  }
+
+  protected enrichWithHumanContext(issue: Partial<AccessibilityIssue>): Partial<AccessibilityIssue> {
+    if (!issue.wcag?.criterion) {
+      return issue;
+    }
+
+    const context = getWCAGContext(issue.wcag.criterion);
+    if (!context) {
+      return issue;
+    }
+
+    const enrichment = enrichIssueWithContext(issue as { wcag?: { criterion: string } }, context);
+
+    return {
+      ...issue,
+      humanContext: enrichment.humanContext,
+      suggestedActions: enrichment.suggestedActions,
+      affectedUsers: enrichment.affectedUsers,
+      priority: enrichment.priority,
+      remediationEffort: enrichment.remediationEffort
+    };
   }
 
   private hashString(str: string): number {

@@ -71,10 +71,10 @@ export class ESLintNormalizer extends BaseNormalizer<ESLintFileResult[]> {
 
     const wcagInfo = this.getWcagInfo(message.ruleId);
 
-    return {
+    const baseIssue = {
       id: this.generateIssueId('eslint-vuejs-a11y', message.ruleId, `${filePath}:${message.line}:${message.column}`),
       ruleId: message.ruleId,
-      tool: 'eslint-vuejs-a11y',
+      tool: 'eslint-vuejs-a11y' as const,
       severity: this.mapSeverity(message.severity),
       wcag: wcagInfo,
       location: {
@@ -86,6 +86,8 @@ export class ESLintNormalizer extends BaseNormalizer<ESLintFileResult[]> {
       message: message.message,
       confidence: 1
     };
+
+    return this.enrichWithHumanContext(baseIssue) as AccessibilityIssue;
   }
 
   private mapSeverity(severity: 1 | 2): Severity {

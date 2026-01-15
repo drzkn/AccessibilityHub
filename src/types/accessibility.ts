@@ -20,7 +20,7 @@ export const WCAGPrincipleSchema = z
 export type WCAGPrinciple = z.infer<typeof WCAGPrincipleSchema>;
 
 export const ToolSourceSchema = z
-  .enum(['axe-core', 'pa11y', 'eslint-vuejs-a11y'])
+  .enum(['axe-core', 'pa11y'])
   .describe('Source tool that detected the issue');
 export type ToolSource = z.infer<typeof ToolSourceSchema>;
 
@@ -81,6 +81,14 @@ export const AccessibilityIssueSchema = z
       )
       .optional()
       .describe('User groups most affected by this issue'),
+    priority: z
+      .enum(['critical', 'high', 'medium', 'low'])
+      .optional()
+      .describe('Remediation priority based on impact'),
+    remediationEffort: z
+      .enum(['low', 'medium', 'high'])
+      .optional()
+      .describe('Estimated effort to fix'),
     confidence: z.number().min(0).max(1).optional().describe('Tool confidence score (0-1)'),
     rawResult: z.unknown().optional().describe('Original result from source tool for debugging'),
   })
