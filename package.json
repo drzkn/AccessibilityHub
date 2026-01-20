@@ -43,16 +43,16 @@
     "web-accessibility",
     "accessibility-testing"
   ],
-  "author": "Diego Rodriguez",
+  "author": "Diego Razquin",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/diegorodriguez/ai-ccesibility.git"
+    "url": "https://github.com/drzkn/A-I-ccesibility"
   },
   "bugs": {
-    "url": "https://github.com/diegorodriguez/ai-ccesibility/issues"
+    "url": "https://github.com/drzkn/A-I-ccesibility/issues"
   },
-  "homepage": "https://github.com/diegorodriguez/ai-ccesibility#readme",
+  "homepage": "https://github.com/drzkn/A-I-ccesibility#readme",
   "packageManager": "pnpm@10.26.2",
   "engines": {
     "node": ">=20.0.0"
