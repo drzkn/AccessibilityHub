@@ -1,0 +1,52 @@
+# Source files
+src/
+tests/
+*.ts
+!*.d.ts
+
+# Config files
+.gitignore
+.prettierrc
+.prettierignore
+tsconfig.json
+tsup.config.ts
+vitest.config.ts
+pnpm-workspace.yaml
+
+# Development
+node_modules/
+coverage/
+.vscode/
+.idea/
+.cursor/
+
+# Tests and fixtures
+tests/
+*.test.ts
+*.spec.ts
+
+# Build artifacts
+*.tsbuildinfo
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary
+tmp/
+temp/
+*.tmp
+
+# Documentation
+repomix-output.xml
+
+# Scripts
+scripts/

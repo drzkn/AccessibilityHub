@@ -3,7 +3,18 @@
   "version": "0.1.0",
   "description": "AI-ccesibility - MCP Server for web accessibility tools orchestration",
   "main": "dist/server.js",
+  "types": "dist/server.d.ts",
   "type": "module",
+  "bin": {
+    "ai-ccesibility": "./dist/server.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "USAGE.md",
+    "EXAMPLES.md"
+  ],
   "scripts": {
     "prebuild": "node scripts/check-node-version.js",
     "build": "tsup",
@@ -16,18 +27,32 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "inspect": "pnpm build && mcp-inspector node dist/server.js"
+    "inspect": "pnpm build && mcp-inspector node dist/server.js",
+    "prepublishOnly": "pnpm run clean && pnpm run build && pnpm run test"
   },
   "keywords": [
     "mcp",
+    "model-context-protocol",
     "accessibility",
     "a11y",
     "wcag",
     "axe-core",
-    "pa11y"
+    "pa11y",
+    "eslint",
+    "vue-accessibility",
+    "web-accessibility",
+    "accessibility-testing"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "Diego Rodriguez",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/diegorodriguez/ai-ccesibility.git"
+  },
+  "bugs": {
+    "url": "https://github.com/diegorodriguez/ai-ccesibility/issues"
+  },
+  "homepage": "https://github.com/diegorodriguez/ai-ccesibility#readme",
   "packageManager": "pnpm@10.26.2",
   "engines": {
     "node": ">=20.0.0"
