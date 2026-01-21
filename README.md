@@ -2,11 +2,32 @@
 
 Servidor MCP para orquestación de herramientas de accesibilidad web (axe-core, Pa11y, eslint-plugin-vuejs-accessibility).
 
+## 📑 Índice
+
+- [📚 Documentación](#-documentación)
+- [Herramientas Disponibles](#herramientas-disponibles)
+  - [analyze-with-axe](#analyze-with-axe)
+  - [analyze-with-pa11y](#analyze-with-pa11y)
+  - [analyze-with-eslint](#analyze-with-eslint)
+  - [analyze-all ⭐](#analyze-all-)
+- [Contexto Humano Enriquecido ✨](#contexto-humano-enriquecido-)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Scripts](#scripts)
+- [Instalación](#instalación)
+- [Configuración en Clientes MCP](#configuración-en-clientes-mcp)
+  - [Claude Desktop](#claude-desktop)
+  - [Cursor](#cursor)
+  - [Windsurf](#windsurf)
+- [Uso](#uso)
+  - [Desarrollo Local](#desarrollo-local)
+- [Configuración](#configuración)
+- [Requisitos](#requisitos)
+- [Dependencias Principales](#dependencias-principales)
+
 ## 📚 Documentación
 
 - **[USAGE.md](./USAGE.md)** - Guía completa de uso, workflows y prompts efectivos
 - **[EXAMPLES.md](./EXAMPLES.md)** - Ejemplos concretos de inputs/outputs para cada herramienta
-- **[README.md](./README.md)** - Este archivo (configuración y reference rápida)
 
 ## Herramientas Disponibles
 
