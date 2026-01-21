@@ -165,18 +165,35 @@ pnpm test:coverage  # Tests con reporte de cobertura
 pnpm inspect.       # Lanzar el inspector de mcp para debuggear herramientas de mcp
 ```
 
-### Usar Claude Desktop o Cursor
+## Instalación
 
-Añade el servidor a tu configuración:
+```bash
+npm install -g ai-ccesibility
+```
 
-**Claude Desktop** (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+O con pnpm:
+
+```bash
+pnpm add -g ai-ccesibility
+```
+
+## Configuración en Clientes MCP
+
+### Claude Desktop
+
+1. Abre el archivo de configuración:
+   - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+   - **Linux**: `~/.config/Claude/claude_desktop_config.json`
+
+2. Añade la configuración del servidor:
 
 ```json
 {
   "mcpServers": {
     "ai-ccesibility": {
-      "command": "node",
-      "args": ["<RUTA_AL_PROYECTO>/dist/server.js"],
+      "command": "npx",
+      "args": ["-y", "ai-ccesibility"],
       "env": {
         "LOG_LEVEL": "info"
       }
@@ -185,10 +202,87 @@ Añade el servidor a tu configuración:
 }
 ```
 
-> ⚠️ Reemplaza `<RUTA_AL_PROYECTO>` con la ruta absoluta a tu proyecto (ej: `/Users/tu-usuario/Proyectos/ai-ccesibility`)
+3. Reinicia Claude Desktop
 
-**Cursor** (`.cursor/mcp.json` en el directorio del proyecto):
+### Cursor
 
+#### Instalación rápida con un clic
+
+[<img src="https://cursor.com/deeplink/mcp-install-dark.svg" alt="Install in Cursor">](https://cursor.com/en/install-mcp?name=AI-ccesibility&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImFpLWNjZXNpYmlsaXR5Il19Cg%3D%3D)
+
+#### Instalación manual
+
+1. Crea o edita el archivo `.cursor/mcp.json` en tu directorio de trabajo
+
+2. Añade la configuración:
+
+```json
+{
+  "mcpServers": {
+    "ai-ccesibility": {
+      "command": "npx",
+      "args": ["-y", "ai-ccesibility"]
+    }
+  }
+}
+```
+
+3. Reinicia Cursor
+
+### Windsurf
+
+1. Abre el archivo de configuración:
+   - **macOS**: `~/Library/Application Support/Windsurf/mcp_config.json`
+   - **Windows**: `%APPDATA%\Windsurf\mcp_config.json`
+   - **Linux**: `~/.config/Windsurf/mcp_config.json`
+
+2. Añade la configuración del servidor:
+
+```json
+{
+  "mcpServers": {
+    "ai-ccesibility": {
+      "command": "npx",
+      "args": ["-y", "ai-ccesibility"],
+      "env": {
+        "LOG_LEVEL": "info"
+      }
+    }
+  }
+}
+```
+
+3. Reinicia Windsurf
+
+## Uso
+
+Una vez configurado, puedes usar prompts como:
+
+- "Analiza la accesibilidad de https://example.com con axe-core y Pa11y"
+- "Revisa este HTML para problemas de accesibilidad: `<img src='foto.jpg'>`"
+- "Analiza los archivos Vue en src/components/ para problemas de accesibilidad" (usa analyze-with-eslint)
+- "Compara los resultados de axe-core y Pa11y en mi landing page" (usa analyze-all)
+
+### Desarrollo Local
+
+Si estás desarrollando o contribuyendo al proyecto, puedes usar rutas locales en lugar de npx:
+
+**Claude Desktop / Windsurf**:
+```json
+{
+  "mcpServers": {
+    "ai-ccesibility": {
+      "command": "node",
+      "args": ["<RUTA_AL_PROYECTO>/dist/server.js"],
+      "env": {
+        "LOG_LEVEL": "debug"
+      }
+    }
+  }
+}
+```
+
+**Cursor**:
 ```json
 {
   "mcpServers": {
@@ -200,14 +294,6 @@ Añade el servidor a tu configuración:
   }
 }
 ```
-
-> ⚠️ Reemplaza `<RUTA_AL_PROYECTO>` con la ruta absoluta a tu proyecto
-
-Luego puedes usar prompts como:
-- "Analiza la accesibilidad de https://example.com con axe-core y Pa11y"
-- "Revisa este HTML para problemas de accesibilidad: `<img src='foto.jpg'>`"
-- "Analiza los archivos Vue en src/components/ para problemas de accesibilidad" (usa analyze-with-eslint)
-- "Compara los resultados de axe-core y Pa11y en mi landing page" (usa analyze-all)
 
 ## Configuración
 
