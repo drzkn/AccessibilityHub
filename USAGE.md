@@ -1,4 +1,4 @@
-# Guía de Uso - AI-ccesibility
+# Guía de Uso - AccesibilityHub
 
 Esta guía proporciona ejemplos prácticos de cómo usar las herramientas de accesibilidad desde Cursor o Claude Desktop.
 

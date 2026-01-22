@@ -1,12 +1,12 @@
 {
-  "name": "ai-ccesibility",
+  "name": "AccesibilityHub",
   "version": "0.1.4",
-  "description": "AI-ccesibility - MCP Server for web accessibility tools orchestration",
+  "description": "AccesibilityHub - MCP Server for web accessibility tools orchestration",
   "main": "dist/server.js",
   "types": "dist/server.d.ts",
   "type": "module",
   "bin": {
-    "ai-ccesibility": "./dist/server.js"
+    "AccesibilityHub": "./dist/server.js"
   },
   "files": [
     "dist",

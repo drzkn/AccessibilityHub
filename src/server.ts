@@ -13,7 +13,7 @@ import {
 } from "@/tools/index.js";
 
 const server = new McpServer({
-  name: 'AI-ccesibility',
+  name: 'AccesibilityHub',
   version: '0.1.4'
 });
 
@@ -32,7 +32,7 @@ function registerTools(): void {
 }
 
 async function main(): Promise<void> {
-  logger.info('Starting AI-ccesibility Server', {
+  logger.info('Starting AccesibilityHub Server', {
     version: '0.1.4',
     tools: ['analyze-with-axe', 'analyze-with-pa11y', 'analyze-with-eslint', 'analyze-all']
   });
@@ -42,11 +42,11 @@ async function main(): Promise<void> {
   const transport = new StdioServerTransport();
   await server.connect(transport);
 
-  logger.info('AI-ccesibility Server connected and ready');
+  logger.info('AccesibilityHub Server connected and ready');
 }
 
 async function shutdown(): Promise<void> {
-  logger.info('Shutting down AI-ccesibility Server');
+  logger.info('Shutting down AccesibilityHub Server');
 
   await Promise.all([
     disposeAxeAdapter(),

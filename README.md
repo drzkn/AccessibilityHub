@@ -1,4 +1,4 @@
-# AI-ccesibility
+# AccesibilityHub
 
 Servidor MCP para orquestación de herramientas de accesibilidad web (axe-core, Pa11y, eslint-plugin-vuejs-accessibility).
 
@@ -190,13 +190,13 @@ pnpm inspect.       # Lanzar el inspector de mcp para debuggear herramientas de 
 ## Instalación
 
 ```bash
-npm install -g ai-ccesibility
+npm install -g AccesibilityHub
 ```
 
 O con pnpm:
 
 ```bash
-pnpm add -g ai-ccesibility
+pnpm add -g AccesibilityHub
 ```
 
 ## Configuración en Clientes MCP
@@ -213,9 +213,9 @@ pnpm add -g ai-ccesibility
 ```json
 {
   "mcpServers": {
-    "ai-ccesibility": {
+    "AccesibilityHub": {
       "command": "npx",
-      "args": ["-y", "ai-ccesibility"],
+      "args": ["-y", "AccesibilityHub"],
       "env": {
         "LOG_LEVEL": "info"
       }
@@ -230,7 +230,7 @@ pnpm add -g ai-ccesibility
 
 #### Instalación rápida con un clic
 
-[<img src="https://cursor.com/deeplink/mcp-install-dark.svg" alt="Install in Cursor">](https://cursor.com/en/install-mcp?name=AI-ccesibility&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImFpLWNjZXNpYmlsaXR5Il19Cg%3D%3D)
+[<img src="https://cursor.com/deeplink/mcp-install-dark.svg" alt="Install in Cursor">](https://cursor.com/en/install-mcp?name=AccesibilityHub&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImFpLWNjZXNpYmlsaXR5Il19Cg%3D%3D)
 
 #### Instalación manual
 
@@ -241,9 +241,9 @@ pnpm add -g ai-ccesibility
 ```json
 {
   "mcpServers": {
-    "ai-ccesibility": {
+    "AccesibilityHub": {
       "command": "npx",
-      "args": ["-y", "ai-ccesibility"]
+      "args": ["-y", "AccesibilityHub"]
     }
   }
 }
@@ -263,9 +263,9 @@ pnpm add -g ai-ccesibility
 ```json
 {
   "mcpServers": {
-    "ai-ccesibility": {
+    "AccesibilityHub": {
       "command": "npx",
-      "args": ["-y", "ai-ccesibility"],
+      "args": ["-y", "AccesibilityHub"],
       "env": {
         "LOG_LEVEL": "info"
       }
@@ -288,9 +288,9 @@ pnpm add -g ai-ccesibility
 ```json
 {
   "mcpServers": {
-    "ai-ccesibility": {
+    "AccesibilityHub": {
       "command": "npx",
-      "args": ["-y", "ai-ccesibility"],
+      "args": ["-y", "AccesibilityHub"],
       "env": {
         "LOG_LEVEL": "info"
       }
@@ -318,7 +318,7 @@ Si estás desarrollando o contribuyendo al proyecto, puedes usar rutas locales e
 ```json
 {
   "mcpServers": {
-    "ai-ccesibility": {
+    "AccesibilityHub": {
       "command": "node",
       "args": ["<RUTA_AL_PROYECTO>/dist/server.js"],
       "env": {
@@ -333,7 +333,7 @@ Si estás desarrollando o contribuyendo al proyecto, puedes usar rutas locales e
 ```json
 {
   "mcpServers": {
-    "ai-ccesibility": {
+    "AccesibilityHub": {
       "command": "node",
       "args": ["dist/server.js"],
       "cwd": "<RUTA_AL_PROYECTO>"
