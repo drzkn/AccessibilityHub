@@ -2,52 +2,196 @@
 
 Servidor MCP para orquestación de herramientas de accesibilidad web (axe-core, Pa11y, eslint-plugin-vuejs-accessibility).
 
-## 📑 Índice
-
-- [📚 Documentación](#-documentación)
-- [Herramientas Disponibles](#herramientas-disponibles)
-  - [analyze-with-axe](#analyze-with-axe)
-  - [analyze-with-pa11y](#analyze-with-pa11y)
-  - [analyze-with-eslint](#analyze-with-eslint)
-  - [analyze-all ⭐](#analyze-all-)
-- [Contexto Humano Enriquecido ✨](#contexto-humano-enriquecido-)
-- [Estructura del Proyecto](#estructura-del-proyecto)
-- [Scripts](#scripts)
-- [Instalación](#instalación)
-- [Configuración en Clientes MCP](#configuración-en-clientes-mcp)
-  - [Claude Desktop](#claude-desktop)
-  - [Cursor](#cursor)
-  - [Windsurf](#windsurf)
-  - [Claude Code](#claude-code)
-- [Uso](#uso)
-  - [Desarrollo Local](#desarrollo-local)
-- [Configuración](#configuración)
-- [Requisitos](#requisitos)
-- [Dependencias Principales](#dependencias-principales)
-
-## 📚 Documentación
+<details>
+<summary><h2>📚 Documentación</h2></summary>
 
 - **[USAGE.md](./USAGE.md)** - Guía completa de uso, workflows y prompts efectivos
 - **[EXAMPLES.md](./EXAMPLES.md)** - Ejemplos concretos de inputs/outputs para cada herramienta
 
-## Herramientas Disponibles
+</details>
 
-### `analyze-with-axe`
+<details>
+<summary><h2>Instalación del servidor</h2></summary>
+
+<details>
+<summary><h3>Claude Desktop</h3></summary>
+
+1. Abre el archivo de configuración:
+   - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+   - **Linux**: `~/.config/Claude/claude_desktop_config.json`
+
+2. Añade la configuración del servidor:
+
+```json
+{
+  "mcpServers": {
+    "ai-ccesibility": {
+      "command": "npx",
+      "args": ["-y", "ai-ccesibility"],
+      "env": {
+        "LOG_LEVEL": "info"
+      }
+    }
+  }
+}
+```
+
+3. Reinicia Claude Desktop
+</details>
+
+<details>
+<summary><h3>Cursor</h3></summary>
+
+#### Instalación rápida con un clic
+
+[<img src="https://cursor.com/deeplink/mcp-install-dark.svg" alt="Install in Cursor">](https://cursor.com/en/install-mcp?name=AI-ccesibility&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImFpLWNjZXNpYmlsaXR5Il19Cg%3D%3D)
+
+#### Instalación manual
+
+1. Crea o edita el archivo `.cursor/mcp.json` en tu directorio de trabajo
+
+2. Añade la configuración:
+
+```json
+{
+  "mcpServers": {
+    "ai-ccesibility": {
+      "command": "npx",
+      "args": ["-y", "ai-ccesibility"]
+    }
+  }
+}
+```
+
+3. Reinicia Cursor
+</details>
+
+<details>
+<summary><h3>Windsurf</h3></summary>
+
+1. Abre el archivo de configuración:
+   - **macOS**: `~/Library/Application Support/Windsurf/mcp_config.json`
+   - **Windows**: `%APPDATA%\Windsurf\mcp_config.json`
+   - **Linux**: `~/.config/Windsurf/mcp_config.json`
+
+2. Añade la configuración del servidor:
+
+```json
+{
+  "mcpServers": {
+    "ai-ccesibility": {
+      "command": "npx",
+      "args": ["-y", "ai-ccesibility"],
+      "env": {
+        "LOG_LEVEL": "info"
+      }
+    }
+  }
+}
+```
+
+3. Reinicia Windsurf
+
+</details>
+
+<details>
+<summary><h3>Claude Code</h3></summary>
+
+1. Abre el archivo de configuración:
+   - **macOS**: `~/Library/Application Support/Code/User/globalStorage/anthropic.claude-code/settings/cline_mcp_settings.json`
+   - **Windows**: `%APPDATA%\Code\User\globalStorage\anthropic.claude-code\settings\cline_mcp_settings.json`
+   - **Linux**: `~/.config/Code/User/globalStorage/anthropic.claude-code/settings/cline_mcp_settings.json`
+
+2. Añade la configuración del servidor:
+
+```json
+{
+  "mcpServers": {
+    "ai-ccesibility": {
+      "command": "npx",
+      "args": ["-y", "ai-ccesibility"],
+      "env": {
+        "LOG_LEVEL": "info"
+      }
+    }
+  }
+}
+```
+
+3. Reinicia VS Code o recarga la ventana (Cmd/Ctrl + Shift + P → "Developer: Reload Window")
+</details>
+
+</details>
+
+<details>
+<summary><h2>Uso</h2></summary>
+
+Una vez configurado, puedes usar prompts como:
+
+- "Analiza la accesibilidad de https://example.com con axe-core y Pa11y"
+- "Revisa este HTML para problemas de accesibilidad: `<img src='foto.jpg'>`"
+- "Analiza los archivos Vue en src/components/ para problemas de accesibilidad" (usa analyze-with-eslint)
+- "Compara los resultados de axe-core y Pa11y en mi landing page" (usa analyze-all)
+
+### Desarrollo Local
+
+Si estás desarrollando o contribuyendo al proyecto, puedes usar rutas locales en lugar de npx:
+
+**Claude Desktop / Windsurf / Claude Code**:
+
+```json
+{
+  "mcpServers": {
+    "ai-ccesibility": {
+      "command": "node",
+      "args": ["<RUTA_AL_PROYECTO>/dist/server.js"],
+      "env": {
+        "LOG_LEVEL": "debug"
+      }
+    }
+  }
+}
+```
+
+**Cursor**:
+
+```json
+{
+  "mcpServers": {
+    "ai-ccesibility": {
+      "command": "node",
+      "args": ["dist/server.js"],
+      "cwd": "<RUTA_AL_PROYECTO>"
+    }
+  }
+}
+```
+
+> 💡 **Tip**: Recuerda ejecutar `pnpm build` cada vez que hagas cambios en el código para que se reflejen en el servidor.
+
+</details>
+
+<details>
+<summary><h2>Herramientas Disponibles</h2></summary>
+
+<details>
+<summary><h3><code>analyze-with-axe</code></h3></summary>
 
 Analiza una página web o contenido HTML para detectar problemas de accesibilidad usando axe-core.
 
 **Parámetros:**
 
-| Parámetro | Tipo | Requerido | Descripción |
-|-----------|------|-----------|-------------|
-| `url` | string | url o html | URL de la página a analizar |
-| `html` | string | url o html | Contenido HTML raw a analizar |
-| `options.wcagLevel` | "A" \| "AA" \| "AAA" | No | Nivel WCAG a verificar (default: AA) |
-| `options.rules` | string[] | No | IDs de reglas axe específicas a ejecutar |
-| `options.excludeRules` | string[] | No | IDs de reglas axe a excluir |
-| `options.includeIncomplete` | boolean | No | Incluir resultados "needs-review" (default: false) |
-| `options.browser.waitForSelector` | string | No | Selector CSS a esperar antes del análisis |
-| `options.browser.viewport` | object | No | Dimensiones del viewport |
+| Parámetro                         | Tipo                 | Requerido  | Descripción                                        |
+| --------------------------------- | -------------------- | ---------- | -------------------------------------------------- |
+| `url`                             | string               | url o html | URL de la página a analizar                        |
+| `html`                            | string               | url o html | Contenido HTML raw a analizar                      |
+| `options.wcagLevel`               | "A" \| "AA" \| "AAA" | No         | Nivel WCAG a verificar (default: AA)               |
+| `options.rules`                   | string[]             | No         | IDs de reglas axe específicas a ejecutar           |
+| `options.excludeRules`            | string[]             | No         | IDs de reglas axe a excluir                        |
+| `options.includeIncomplete`       | boolean              | No         | Incluir resultados "needs-review" (default: false) |
+| `options.browser.waitForSelector` | string               | No         | Selector CSS a esperar antes del análisis          |
+| `options.browser.viewport`        | object               | No         | Dimensiones del viewport                           |
 
 **Ejemplo de respuesta:**
 
@@ -82,33 +226,40 @@ Analiza una página web o contenido HTML para detectar problemas de accesibilida
   "duration": 1234
 }
 ```
+</details>
 
-### `analyze-with-pa11y`
+<details>
+<summary><h3><code>analyze-with-pa11y</code></h3></summary>
 
 Analiza una página web o contenido HTML usando Pa11y.
 
 **Parámetros similares a axe**, con `options.standard` para elegir el estándar WCAG (WCAG2AA, WCAG21AA, etc.).
+</details>
 
-### `analyze-with-eslint`
-
+<details>
+<summary><h3><code>analyze-with-eslint</code></h3></summary>
 Analiza archivos Vue.js para problemas de accesibilidad mediante análisis estático.
 
 **Parámetros:**
+
 - `files`: Array de rutas de archivos .vue
 - `directory`: Directorio a analizar recursivamente
 - `code`: Código Vue inline a analizar
+</details>
 
-### `analyze-all` ⭐
-
+<details>
+<summary><h3><code>analyze-all ⭐</code></h3></summary>
 **Tool de síntesis para análisis web** que ejecuta axe-core y Pa11y en paralelo y combina los resultados.
 
 **Parámetros:**
+
 - `url` o `html`: Target web a analizar (requerido)
 - `tools`: Array de tools a ejecutar (default: `['axe-core', 'pa11y']`)
 - `options.deduplicateResults`: Eliminar issues duplicados (default: `true`)
 - `options.wcagLevel`: Nivel WCAG (default: `'AA'`)
 
 **Respuesta incluye:**
+
 - `issues`: Issues combinados y deduplicados
 - `issuesByWCAG`: Issues agrupados por criterio WCAG
 - `summary.byTool`: Conteo de issues por herramienta
@@ -117,7 +268,12 @@ Analiza archivos Vue.js para problemas de accesibilidad mediante análisis está
 
 **Nota:** Para análisis de código Vue, usa `analyze-with-eslint` por separado. Esta herramienta está especializada en análisis web dinámico.
 
-## Contexto Humano Enriquecido ✨
+</details>
+
+</details>
+
+<details>
+<summary><h2>Contexto Humano Enriquecido ✨</h2></summary>
 
 Todos los issues incluyen automáticamente:
 
@@ -129,6 +285,7 @@ Todos los issues incluyen automáticamente:
 - **Soluciones sugeridas** paso a paso
 
 Ejemplo de issue enriquecido:
+
 ```json
 {
   "ruleId": "image-alt",
@@ -143,7 +300,34 @@ Ejemplo de issue enriquecido:
 
 Los datos WCAG se mantienen en `src/data/wcag-criteria.json` y son fácilmente actualizables.
 
-## Estructura del Proyecto
+</details>
+
+
+<details>
+<summary><h2>Requisitos</h2></summary>
+
+- Node.js ≥ 20
+- pnpm
+- Chrome/Chromium (descargado automáticamente por Puppeteer)
+
+</details>
+
+<details>
+<summary><h2>Dependencias Principales</h2></summary>
+
+- `@modelcontextprotocol/sdk` - SDK para servidores MCP
+- `puppeteer` - Control de navegador headless
+- `@axe-core/puppeteer` - Integración axe-core con Puppeteer
+- `axe-core` - Motor de análisis de accesibilidad
+- `pa11y` - Herramienta de testing de accesibilidad
+- `eslint` + `eslint-plugin-vuejs-accessibility` - Linting estático de Vue.js
+- `zod` - Validación de schemas
+- `pino` - Logging estructurado
+
+</details>
+
+<details>
+<summary><h2>Estructura del Proyecto</h2></summary>
 
 ```
 src/
@@ -172,7 +356,10 @@ tests/
 └── helpers/            # Utilidades para tests (mock server, etc.)
 ```
 
-## Scripts
+</details>
+
+<details>
+<summary><h2>Scripts</h2></summary>
 
 ```bash
 pnpm build          # Compila a dist/
@@ -187,7 +374,10 @@ pnpm test:coverage  # Tests con reporte de cobertura
 pnpm inspect.       # Lanzar el inspector de mcp para debuggear herramientas de mcp
 ```
 
-## Instalación
+</details>
+
+<details>
+<summary><h2>Instalación del proyecto</h2></summary>
 
 ```bash
 npm install -g ai-ccesibility
@@ -199,170 +389,4 @@ O con pnpm:
 pnpm add -g ai-ccesibility
 ```
 
-## Configuración en Clientes MCP
-
-### Claude Desktop
-
-1. Abre el archivo de configuración:
-   - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-   - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
-   - **Linux**: `~/.config/Claude/claude_desktop_config.json`
-
-2. Añade la configuración del servidor:
-
-```json
-{
-  "mcpServers": {
-    "ai-ccesibility": {
-      "command": "npx",
-      "args": ["-y", "ai-ccesibility"],
-      "env": {
-        "LOG_LEVEL": "info"
-      }
-    }
-  }
-}
-```
-
-3. Reinicia Claude Desktop
-
-### Cursor
-
-#### Instalación rápida con un clic
-
-[<img src="https://cursor.com/deeplink/mcp-install-dark.svg" alt="Install in Cursor">](https://cursor.com/en/install-mcp?name=AI-ccesibility&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImFpLWNjZXNpYmlsaXR5Il19Cg%3D%3D)
-
-#### Instalación manual
-
-1. Crea o edita el archivo `.cursor/mcp.json` en tu directorio de trabajo
-
-2. Añade la configuración:
-
-```json
-{
-  "mcpServers": {
-    "ai-ccesibility": {
-      "command": "npx",
-      "args": ["-y", "ai-ccesibility"]
-    }
-  }
-}
-```
-
-3. Reinicia Cursor
-
-### Windsurf
-
-1. Abre el archivo de configuración:
-   - **macOS**: `~/Library/Application Support/Windsurf/mcp_config.json`
-   - **Windows**: `%APPDATA%\Windsurf\mcp_config.json`
-   - **Linux**: `~/.config/Windsurf/mcp_config.json`
-
-2. Añade la configuración del servidor:
-
-```json
-{
-  "mcpServers": {
-    "ai-ccesibility": {
-      "command": "npx",
-      "args": ["-y", "ai-ccesibility"],
-      "env": {
-        "LOG_LEVEL": "info"
-      }
-    }
-  }
-}
-```
-
-3. Reinicia Windsurf
-
-### Claude Code
-
-1. Abre el archivo de configuración:
-   - **macOS**: `~/Library/Application Support/Code/User/globalStorage/anthropic.claude-code/settings/cline_mcp_settings.json`
-   - **Windows**: `%APPDATA%\Code\User\globalStorage\anthropic.claude-code\settings\cline_mcp_settings.json`
-   - **Linux**: `~/.config/Code/User/globalStorage/anthropic.claude-code/settings/cline_mcp_settings.json`
-
-2. Añade la configuración del servidor:
-
-```json
-{
-  "mcpServers": {
-    "ai-ccesibility": {
-      "command": "npx",
-      "args": ["-y", "ai-ccesibility"],
-      "env": {
-        "LOG_LEVEL": "info"
-      }
-    }
-  }
-}
-```
-
-3. Reinicia VS Code o recarga la ventana (Cmd/Ctrl + Shift + P → "Developer: Reload Window")
-
-## Uso
-
-Una vez configurado, puedes usar prompts como:
-
-- "Analiza la accesibilidad de https://example.com con axe-core y Pa11y"
-- "Revisa este HTML para problemas de accesibilidad: `<img src='foto.jpg'>`"
-- "Analiza los archivos Vue en src/components/ para problemas de accesibilidad" (usa analyze-with-eslint)
-- "Compara los resultados de axe-core y Pa11y en mi landing page" (usa analyze-all)
-
-### Desarrollo Local
-
-Si estás desarrollando o contribuyendo al proyecto, puedes usar rutas locales en lugar de npx:
-
-**Claude Desktop / Windsurf / Claude Code**:
-```json
-{
-  "mcpServers": {
-    "ai-ccesibility": {
-      "command": "node",
-      "args": ["<RUTA_AL_PROYECTO>/dist/server.js"],
-      "env": {
-        "LOG_LEVEL": "debug"
-      }
-    }
-  }
-}
-```
-
-**Cursor**:
-```json
-{
-  "mcpServers": {
-    "ai-ccesibility": {
-      "command": "node",
-      "args": ["dist/server.js"],
-      "cwd": "<RUTA_AL_PROYECTO>"
-    }
-  }
-}
-```
-
-> 💡 **Tip**: Recuerda ejecutar `pnpm build` cada vez que hagas cambios en el código para que se reflejen en el servidor.
-
-## Configuración
-
-| Variable    | Default | Descripción                      |
-|-------------|---------|----------------------------------|
-| `LOG_LEVEL` | `info`  | `debug`, `info`, `warn`, `error` |
-
-## Requisitos
-
-- Node.js ≥ 20
-- pnpm
-- Chrome/Chromium (descargado automáticamente por Puppeteer)
-
-## Dependencias Principales
-
-- `@modelcontextprotocol/sdk` - SDK para servidores MCP
-- `puppeteer` - Control de navegador headless
-- `@axe-core/puppeteer` - Integración axe-core con Puppeteer
-- `axe-core` - Motor de análisis de accesibilidad
-- `pa11y` - Herramienta de testing de accesibilidad
-- `eslint` + `eslint-plugin-vuejs-accessibility` - Linting estático de Vue.js
-- `zod` - Validación de schemas
-- `pino` - Logging estructurado
+</details>
