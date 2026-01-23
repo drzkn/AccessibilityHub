@@ -17,7 +17,7 @@ const baseLogger = pino(
     level: logLevel,
     base: {
       service: 'AccesibilityHub',
-      version: '0.1.1',
+      version: '0.1.2',
     },
     timestamp: pino.stdTimeFunctions.isoTime,
     formatters: {
