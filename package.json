@@ -1,12 +1,12 @@
 {
-  "name": "AccesibilityHub",
-  "version": "0.1.4",
-  "description": "AccesibilityHub - MCP Server for web accessibility tools orchestration",
+  "name": "accessibility-hub",
+  "version": "0.1.0",
+  "description": "MCP Server for web accessibility tools orchestration",
   "main": "dist/server.js",
   "types": "dist/server.d.ts",
   "type": "module",
   "bin": {
-    "AccesibilityHub": "./dist/server.js"
+    "accessibility-hub": "./dist/server.js"
   },
   "files": [
     "dist",
