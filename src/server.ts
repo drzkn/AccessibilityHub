@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { logger } from "@/utils/logger.js";
+import { logger, APP_VERSION } from "@/utils/logger.js";
 import {
   analyzeWithAxeTool,
   analyzeWithPa11yTool,
@@ -14,7 +14,7 @@ import {
 
 const server = new McpServer({
   name: 'AccesibilityHub',
-  version: '0.1.2'
+  version: APP_VERSION
 });
 
 function registerTools(): void {
@@ -33,7 +33,7 @@ function registerTools(): void {
 
 async function main(): Promise<void> {
   logger.info('Starting AccesibilityHub Server', {
-    version: '0.1.2',
+    version: APP_VERSION,
     tools: ['analyze-with-axe', 'analyze-with-pa11y', 'analyze-with-eslint', 'analyze-all']
   });
 
