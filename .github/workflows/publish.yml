@@ -39,9 +39,6 @@ jobs:
       - name: Run tests
         run: pnpm test
 
-      - name: Build package
-        run: pnpm build
-
       - name: Extract version type from PR title
         id: version
         env:
@@ -70,6 +67,9 @@ jobs:
           NEW_VERSION=$(node -p "require('./package.json').version")
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "📦 New version: $NEW_VERSION"
+
+      - name: Build package
+        run: pnpm build
 
       - name: Commit and push version bump
         run: |
