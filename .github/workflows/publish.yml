@@ -1,0 +1,150 @@
+name: Publish to NPM
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: 'Version type for the release'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+        default: patch
+      dry_run:
+        description: 'Dry run - validate without publishing'
+        type: boolean
+        default: true
+  pull_request:
+    types: [closed]
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: Publish Package
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Extract version type
+        id: version
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          INPUT_VERSION_TYPE: ${{ inputs.version_type }}
+          IS_WORKFLOW_DISPATCH: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          if [ "$IS_WORKFLOW_DISPATCH" = "true" ]; then
+            VERSION_TYPE_LOWER="$INPUT_VERSION_TYPE"
+            echo "📦 Version type (from input): $VERSION_TYPE_LOWER"
+          else
+            VERSION_TYPE=$(echo "$PR_TITLE" | grep -oE '\b(MAJOR|MINOR|PATCH)\b' | head -1)
+            VERSION_TYPE_LOWER=$(echo "$VERSION_TYPE" | tr '[:upper:]' '[:lower:]')
+            echo "📦 Version type (from PR title): $VERSION_TYPE_LOWER"
+          fi
+
+          echo "version_type=$VERSION_TYPE_LOWER" >> $GITHUB_OUTPUT
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version
+        id: bump
+        run: |
+          npm version ${{ steps.version.outputs.version_type }} --no-git-tag-version
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "📦 New version: $NEW_VERSION"
+
+      - name: Build package
+        run: pnpm build
+
+      - name: Install Chrome for Puppeteer
+        run: npx puppeteer browsers install chrome
+
+      - name: Validate NPM token
+        run: |
+          echo "🔑 Validating NPM authentication..."
+          npm whoami
+          echo "✅ NPM token is valid"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Check version doesn't exist in NPM
+        run: |
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          echo "📦 Checking if $PACKAGE_NAME@${{ steps.bump.outputs.new_version }} exists in NPM..."
+          if npm view "$PACKAGE_NAME@${{ steps.bump.outputs.new_version }}" version 2>/dev/null; then
+            echo "❌ Version ${{ steps.bump.outputs.new_version }} already exists in NPM"
+            exit 1
+          fi
+          echo "✅ Version ${{ steps.bump.outputs.new_version }} is available in NPM"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Check tag doesn't exist
+        run: |
+          echo "🏷️ Checking if tag v${{ steps.bump.outputs.new_version }} exists..."
+          if git rev-parse "v${{ steps.bump.outputs.new_version }}" >/dev/null 2>&1; then
+            echo "❌ Tag v${{ steps.bump.outputs.new_version }} already exists in repository"
+            exit 1
+          fi
+          echo "✅ Tag v${{ steps.bump.outputs.new_version }} is available"
+
+      - name: Commit, tag and push release
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
+        run: |
+          git add package.json
+          git commit -m "chore: bump version to v${{ steps.bump.outputs.new_version }}"
+          git tag "v${{ steps.bump.outputs.new_version }}"
+          git push origin master
+          git push origin "v${{ steps.bump.outputs.new_version }}"
+
+      - name: Publish to NPM
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
+        run: pnpm publish --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.bump.outputs.new_version }}
+          name: v${{ steps.bump.outputs.new_version }}
+          body: |
+            ## Changes
+
+            ${{ github.event.pull_request.body }}
+
+            ---
+            PR: #${{ github.event.pull_request.number }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

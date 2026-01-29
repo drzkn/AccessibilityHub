@@ -1,5 +1,9 @@
 import pino from 'pino';
 
+declare const __PKG_VERSION__: string;
+
+export const APP_VERSION = __PKG_VERSION__;
+
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 export interface LogContext {
@@ -17,7 +21,7 @@ const baseLogger = pino(
     level: logLevel,
     base: {
       service: 'AccesibilityHub',
-      version: '0.1.2',
+      version: APP_VERSION,
     },
     timestamp: pino.stdTimeFunctions.isoTime,
     formatters: {

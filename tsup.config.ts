@@ -1,4 +1,7 @@
 import { defineConfig } from 'tsup';
+import { readFileSync } from 'fs';
+
+const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
 export default defineConfig({
   entry: ['src/server.ts'],
@@ -14,6 +17,9 @@ export default defineConfig({
   shims: true,
   banner: {
     js: '#!/usr/bin/env node',
+  },
+  define: {
+    __PKG_VERSION__: JSON.stringify(pkg.version),
   },
   esbuildOptions(options) {
     options.alias = {

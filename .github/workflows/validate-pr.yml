@@ -1,0 +1,62 @@
+name: Validate PR
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  validate:
+    name: Validate Build & Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR title has version type
+        if: github.event_name == 'pull_request'
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "PR Title: $PR_TITLE"
+
+          if echo "$PR_TITLE" | grep -qE '\b(MAJOR|MINOR|PATCH)\b'; then
+            VERSION_TYPE=$(echo "$PR_TITLE" | grep -oE '\b(MAJOR|MINOR|PATCH)\b' | head -1)
+            echo "✅ Version type found: $VERSION_TYPE"
+            exit 0
+          else
+            echo "❌ Error: PR title must contain MAJOR, MINOR, or PATCH"
+            echo ""
+            echo "Examples of valid PR titles:"
+            echo "  - 'PATCH: Fix button accessibility issue'"
+            echo "  - 'MINOR: Add new WCAG validation tool'"
+            echo "  - 'MAJOR: Breaking changes to API structure'"
+            echo ""
+            echo "Please update your PR title to include the version type."
+            exit 1
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Chrome for Puppeteer
+        run: npx puppeteer browsers install chrome
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Build package
+        run: pnpm build
+
