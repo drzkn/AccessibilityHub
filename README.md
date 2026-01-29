@@ -9,6 +9,7 @@ Servidor MCP para orquestación de herramientas de accesibilidad web (axe-core, 
   - [analyze-with-axe](#analyze-with-axe)
   - [analyze-with-pa11y](#analyze-with-pa11y)
   - [analyze-with-eslint](#analyze-with-eslint)
+  - [analyze-contrast](#analyze-contrast)
   - [analyze-all ⭐](#analyze-all-)
 - [Contexto Humano Enriquecido ✨](#contexto-humano-enriquecido-)
 - [Estructura del Proyecto](#estructura-del-proyecto)
@@ -104,6 +105,82 @@ Analiza archivos Vue.js para problemas de accesibilidad mediante análisis está
 - `directory`: Directorio a analizar recursivamente
 - `code`: Código Vue inline a analizar
 
+### `analyze-contrast`
+
+Analiza una página web o contenido HTML para detectar problemas de contraste de color según WCAG 2.1.
+
+**Parámetros:**
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| `url` | string | url o html | URL de la página a analizar |
+| `html` | string | url o html | Contenido HTML raw a analizar |
+| `options.wcagLevel` | "AA" \| "AAA" | No | Nivel WCAG: AA (4.5:1 normal, 3:1 grande) o AAA (7:1 normal, 4.5:1 grande). Default: AA |
+| `options.suggestFixes` | boolean | No | Sugerir correcciones de color (default: true) |
+| `options.includePassingElements` | boolean | No | Incluir elementos que pasan en los resultados (default: false) |
+| `options.selector` | string | No | Selector CSS para limitar el análisis a un elemento específico |
+| `options.browser.waitForSelector` | string | No | Selector CSS a esperar antes del análisis |
+| `options.browser.viewport` | object | No | Dimensiones del viewport |
+| `options.browser.ignoreHTTPSErrors` | boolean | No | Ignorar errores de certificado SSL (default: false) |
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "success": true,
+  "target": "https://example.com",
+  "wcagLevel": "AA",
+  "issueCount": 2,
+  "issues": [
+    {
+      "id": "contrast-0",
+      "ruleId": "color-contrast",
+      "tool": "contrast-analyzer",
+      "severity": "serious",
+      "wcag": {
+        "criterion": "1.4.3",
+        "level": "AA",
+        "principle": "perceivable"
+      },
+      "location": {
+        "selector": "p.subtitle",
+        "snippet": "<p class=\"subtitle\">Texto de ejemplo</p>"
+      },
+      "message": "Contrast ratio 3.2:1 does not meet AA requirements (4.5:1 required for normal text)",
+      "contrastData": {
+        "foreground": "rgb(150, 150, 150)",
+        "background": "rgb(255, 255, 255)",
+        "currentRatio": 3.2,
+        "requiredRatio": 4.5,
+        "isLargeText": false,
+        "fontSize": 16,
+        "fontWeight": 400,
+        "suggestedFix": {
+          "foreground": "#767676",
+          "background": "#ffffff",
+          "newRatio": 4.54
+        }
+      },
+      "affectedUsers": ["low-vision", "color-blind"]
+    }
+  ],
+  "summary": {
+    "total": 15,
+    "passing": 13,
+    "failing": 2,
+    "byTextSize": {
+      "normalText": { "passing": 10, "failing": 2 },
+      "largeText": { "passing": 3, "failing": 0 }
+    }
+  },
+  "duration": 1543
+}
+```
+
+**Criterios WCAG:**
+- 1.4.3 Contraste (Mínimo) - Nivel AA
+- 1.4.6 Contraste (Mejorado) - Nivel AAA
+
 ### `analyze-all` ⭐
 
 **Tool de síntesis para análisis web** que ejecuta axe-core y Pa11y en paralelo y combina los resultados.
@@ -160,22 +237,34 @@ src/
 │   ├── base.ts         # Clase base para adaptadores
 │   ├── axe.ts          # Adaptador axe-core con Puppeteer
 │   ├── pa11y.ts        # Adaptador Pa11y
-│   └── eslint.ts       # Adaptador ESLint Vue a11y
+│   ├── eslint.ts       # Adaptador ESLint Vue a11y
+│   └── contrast.ts     # Adaptador de análisis de contraste
 ├── tools/
 │   ├── base.ts         # Utilidades para tools MCP
 │   ├── axe.ts          # Tool analyze-with-axe
 │   ├── pa11y.ts        # Tool analyze-with-pa11y
 │   ├── eslint.ts       # Tool analyze-with-eslint
+│   ├── contrast.ts     # Tool analyze-contrast
 │   └── analyze-all.ts  # Tool de síntesis multi-herramienta
 ├── types/              # Schemas Zod (inputs, outputs, validación)
+│   └── contrast.ts     # Tipos para análisis de contraste
 ├── normalizers/        # Transformación a formato unificado
-└── utils/              # Logger, contexto WCAG
+└── utils/
+    ├── logger.ts       # Logging estructurado
+    ├── wcag-context.ts # Contexto WCAG
+    └── color-analysis/ # Utilidades de análisis de color
+        ├── contrast.ts   # Cálculo de ratios de contraste
+        ├── converters.ts # Conversión entre formatos de color
+        └── parsers.ts    # Parseo de colores CSS
 
 tests/
 ├── adapters/           # Tests unitarios de adaptadores
+│   └── contrast.test.ts
 ├── tools/              # Tests de integración de tools
 ├── fixtures/           # HTML con problemas de accesibilidad conocidos
-└── helpers/            # Utilidades para tests (mock server, etc.)
+├── helpers/            # Utilidades para tests (mock server, etc.)
+└── utils/
+    └── color-analysis/ # Tests de utilidades de color
 ```
 
 ## Scripts
@@ -315,6 +404,8 @@ Una vez configurado, puedes usar prompts como:
 - "Revisa este HTML para problemas de accesibilidad: `<img src='foto.jpg'>`"
 - "Analiza los archivos Vue en src/components/ para problemas de accesibilidad" (usa analyze-with-eslint)
 - "Compara los resultados de axe-core y Pa11y en mi landing page" (usa analyze-all)
+- "Verifica el contraste de colores de mi página web" (usa analyze-contrast)
+- "Analiza si los colores de texto cumplen con WCAG AAA" (usa analyze-contrast con wcagLevel: AAA)
 
 ### Desarrollo Local
 
