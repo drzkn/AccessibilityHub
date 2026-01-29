@@ -93,6 +93,238 @@ export const lowContrastHtml = `
 </html>
 `;
 
+export const veryLowContrastHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Very Low Contrast</title>
+  <style>
+    .very-low { color: #ccc; background-color: #ddd; }
+    .normal { color: #333; background-color: #fff; }
+    .large-text { font-size: 24px; color: #888; background-color: #fff; }
+    .bold-large { font-size: 18.5px; font-weight: 700; color: #888; background-color: #fff; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="very-low">This text has very low contrast</p>
+    <p class="normal">This text has good contrast</p>
+    <p class="large-text">This is large text with moderate contrast</p>
+    <p class="bold-large">This is bold large text</p>
+  </main>
+</body>
+</html>
+`;
+
+export const moderateContrastHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Moderate Contrast</title>
+  <style>
+    .moderate { color: #595959; background-color: #fff; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="moderate">This text has moderate contrast (around 5:1)</p>
+  </main>
+</body>
+</html>
+`;
+
+export const contrastWithInheritedBackgroundHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Inherited Background</title>
+  <style>
+    .parent { background-color: #333; padding: 20px; }
+    .child-low { color: #555; }
+    .child-good { color: #fff; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="parent">
+      <p class="child-low">This text inherits dark background but has low contrast</p>
+      <p class="child-good">This text inherits dark background and has good contrast</p>
+    </div>
+  </main>
+</body>
+</html>
+`;
+
+export const contrastWithTransparentBackgroundHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Transparent Background</title>
+  <style>
+    body { background-color: #f0f0f0; }
+    .transparent-bg { background-color: transparent; color: #ccc; }
+    .rgba-bg { background-color: rgba(0, 0, 0, 0.1); color: #bbb; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="transparent-bg">Text with transparent background</p>
+    <p class="rgba-bg">Text with semi-transparent background</p>
+  </main>
+</body>
+</html>
+`;
+
+export const contrastMultipleFormatsHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Multiple Color Formats</title>
+  <style>
+    .hex-colors { color: #999; background-color: #bbb; }
+    .rgb-colors { color: rgb(150, 150, 150); background-color: rgb(180, 180, 180); }
+    .hsl-colors { color: hsl(0, 0%, 60%); background-color: hsl(0, 0%, 75%); }
+    .named-colors { color: gray; background-color: silver; }
+    .rgba-colors { color: rgba(100, 100, 100, 1); background-color: rgba(200, 200, 200, 1); }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="hex-colors">Hex format low contrast</p>
+    <p class="rgb-colors">RGB format low contrast</p>
+    <p class="hsl-colors">HSL format low contrast</p>
+    <p class="named-colors">Named colors low contrast</p>
+    <p class="rgba-colors">RGBA format low contrast</p>
+  </main>
+</body>
+</html>
+`;
+
+export const contrastLargeTextHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Large Text Contrast</title>
+  <style>
+    .large-normal { font-size: 24px; color: #767676; background-color: #fff; }
+    .large-bold { font-size: 18.5px; font-weight: 700; color: #767676; background-color: #fff; }
+    .large-pass { font-size: 24px; color: #666; background-color: #fff; }
+    .small-fail { font-size: 16px; color: #767676; background-color: #fff; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="large-normal">Large text (24px) with 4.54:1 ratio - passes AA</p>
+    <p class="large-bold">Bold large text (18.5px bold) with 4.54:1 ratio - passes AA</p>
+    <p class="large-pass">Large text with better contrast - passes AA</p>
+    <p class="small-fail">Small text with same color - fails AA</p>
+  </main>
+</body>
+</html>
+`;
+
+export const contrastAAALevelHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AAA Level Contrast</title>
+  <style>
+    .passes-aa-fails-aaa { color: #595959; background-color: #fff; }
+    .passes-aaa { color: #333; background-color: #fff; }
+    .fails-both { color: #888; background-color: #aaa; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="passes-aa-fails-aaa">Passes AA (4.5+:1) but fails AAA (7:1)</p>
+    <p class="passes-aaa">Passes both AA and AAA levels</p>
+    <p class="fails-both">Fails both AA and AAA levels</p>
+  </main>
+</body>
+</html>
+`;
+
+export const contrastNestedElementsHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Nested Elements Contrast</title>
+  <style>
+    .outer { background-color: #eee; padding: 20px; }
+    .middle { background-color: #ddd; padding: 15px; }
+    .inner-low { color: #aaa; }
+    .inner-good { color: #333; }
+    a.link-low { color: #999; }
+    strong.emphasis { color: #bbb; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="outer">
+      <div class="middle">
+        <p class="inner-low">Nested element with low contrast</p>
+        <p class="inner-good">Nested element with good contrast</p>
+        <p>Text with <a href="#" class="link-low">low contrast link</a> inside</p>
+        <p>Text with <strong class="emphasis">low contrast emphasis</strong> inside</p>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+`;
+
+export const contrastUIComponentsHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>UI Components Contrast</title>
+  <style>
+    .btn-low {
+      background-color: #ddd;
+      color: #aaa;
+      border: 1px solid #ccc;
+      padding: 10px 20px;
+    }
+    .input-low {
+      border: 1px solid #ddd;
+      color: #aaa;
+      padding: 8px;
+    }
+    .input-low::placeholder {
+      color: #ccc;
+    }
+    .label-low {
+      color: #999;
+      background-color: #eee;
+    }
+    .icon-text {
+      color: #bbb;
+      background-color: #ddd;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <form>
+      <label class="label-low">Low contrast label</label>
+      <input type="text" class="input-low" placeholder="Low contrast placeholder">
+      <button class="btn-low">Low contrast button</button>
+    </form>
+    <p class="icon-text">Icon or decorative text with low contrast</p>
+  </main>
+</body>
+</html>
+`;
+
 export const missingLangHtml = `
 <!DOCTYPE html>
 <html>
@@ -263,6 +495,15 @@ export const fixtures = {
   missingAltText: missingAltTextHtml,
   missingFormLabels: missingFormLabelsHtml,
   lowContrast: lowContrastHtml,
+  veryLowContrast: veryLowContrastHtml,
+  moderateContrast: moderateContrastHtml,
+  contrastWithInheritedBackground: contrastWithInheritedBackgroundHtml,
+  contrastWithTransparentBackground: contrastWithTransparentBackgroundHtml,
+  contrastMultipleFormats: contrastMultipleFormatsHtml,
+  contrastLargeText: contrastLargeTextHtml,
+  contrastAAALevel: contrastAAALevelHtml,
+  contrastNestedElements: contrastNestedElementsHtml,
+  contrastUIComponents: contrastUIComponentsHtml,
   missingLang: missingLangHtml,
   emptyButtonsAndLinks: emptyButtonsAndLinksHtml,
   duplicateIds: duplicateIdsHtml,
