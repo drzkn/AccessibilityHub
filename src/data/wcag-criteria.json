@@ -91,6 +91,52 @@
     },
     "wcagUrl": "https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html"
   },
+  "1.4.6": {
+    "criterion": "1.4.6",
+    "level": "AAA",
+    "principle": "perceivable",
+    "title": "Contraste mejorado",
+    "description": "El texto debe tener una relación de contraste de al menos 7:1 (4.5:1 para texto grande).",
+    "userImpact": {
+      "affectedUsers": ["low-vision", "color-blind"],
+      "impactDescription": "Usuarios con baja visión severa necesitan ratios de contraste más altos para poder leer el texto cómodamente.",
+      "realWorldExample": "Un usuario con degeneración macular necesita contraste 7:1 para leer texto de tamaño normal sin esfuerzo visual excesivo."
+    },
+    "remediation": {
+      "effort": "low",
+      "priority": "medium",
+      "commonSolutions": [
+        "Ajustar colores para cumplir ratio 7:1 mínimo para texto normal",
+        "Usar ratio 4.5:1 para texto grande (18pt o 14pt bold)",
+        "Considerar modo de alto contraste como opción",
+        "Probar con usuarios con baja visión"
+      ]
+    },
+    "wcagUrl": "https://www.w3.org/WAI/WCAG21/Understanding/contrast-enhanced.html"
+  },
+  "1.4.11": {
+    "criterion": "1.4.11",
+    "level": "AA",
+    "principle": "perceivable",
+    "title": "Contraste no textual",
+    "description": "Los componentes de interfaz de usuario y objetos gráficos deben tener una relación de contraste de al menos 3:1.",
+    "userImpact": {
+      "affectedUsers": ["low-vision", "color-blind"],
+      "impactDescription": "Usuarios con baja visión no pueden distinguir controles de interfaz, iconos o gráficos importantes si no tienen suficiente contraste.",
+      "realWorldExample": "Un usuario con baja visión no puede ver el borde de un campo de formulario gris claro sobre fondo blanco, sin saber dónde hacer clic."
+    },
+    "remediation": {
+      "effort": "low",
+      "priority": "high",
+      "commonSolutions": [
+        "Asegurar que bordes de inputs tengan ratio 3:1 contra el fondo",
+        "Usar iconos con suficiente contraste o añadir etiquetas de texto",
+        "Verificar estados de focus, hover y disabled también cumplan 3:1",
+        "Añadir indicadores visuales adicionales como bordes más gruesos"
+      ]
+    },
+    "wcagUrl": "https://www.w3.org/WAI/WCAG21/Understanding/non-text-contrast.html"
+  },
   "2.1.1": {
     "criterion": "2.1.1",
     "level": "A",
