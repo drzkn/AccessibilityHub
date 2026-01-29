@@ -62,12 +62,6 @@ jobs:
             echo "📦 Version type (from input): $VERSION_TYPE_LOWER"
           else
             VERSION_TYPE=$(echo "$PR_TITLE" | grep -oE '\b(MAJOR|MINOR|PATCH)\b' | head -1)
-
-            if [ -z "$VERSION_TYPE" ]; then
-              echo "❌ Error: No version type found in PR title"
-              exit 1
-            fi
-
             VERSION_TYPE_LOWER=$(echo "$VERSION_TYPE" | tr '[:upper:]' '[:lower:]')
             echo "📦 Version type (from PR title): $VERSION_TYPE_LOWER"
           fi
@@ -151,19 +145,3 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Dry run summary
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
-        run: |
-          echo "🧪 DRY RUN COMPLETED SUCCESSFULLY"
-          echo ""
-          echo "Summary:"
-          echo "  - Version type: ${{ steps.version.outputs.version_type }}"
-          echo "  - New version would be: ${{ steps.bump.outputs.new_version }}"
-          echo "  - Tests: ✅ Passed"
-          echo "  - Build: ✅ Passed"
-          echo "  - NPM token: ✅ Valid"
-          echo "  - NPM version: ✅ Available"
-          echo "  - Git tag: ✅ Available"
-          echo ""
-          echo "All validations passed. No changes were pushed and no package was published."
