@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version_type:
-        description: 'Version type (ignored if dry_run is true)'
+        description: 'Version type for the release'
         required: true
         type: choice
         options:
@@ -84,9 +84,6 @@ jobs:
       - name: Build package
         run: pnpm build
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
       - name: Install Chrome for Puppeteer
         run: npx puppeteer browsers install chrome
 
@@ -119,7 +116,7 @@ jobs:
           fi
           echo "✅ Tag v${{ steps.bump.outputs.new_version }} is available"
 
-      - name: Commit and push version bump
+      - name: Commit, tag and push release
         if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
         run: |
           git add package.json
