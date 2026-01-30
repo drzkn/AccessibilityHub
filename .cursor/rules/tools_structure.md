@@ -26,13 +26,11 @@ ToolName/
 
 | Tool | Descripción |
 |------|-------------|
-| **AnalyzeAll** | Ejecuta análisis completo combinando múltiples herramientas |
+| **AnalyzeMixed** | Ejecuta análisis completo combinando múltiples herramientas (axe-core + Pa11y) |
 | **Axe** | Análisis de accesibilidad usando axe-core |
 | **Base** | Clase base y utilidades compartidas entre tools |
 | **Contrast** | Análisis de contraste de colores |
 | **Pa11y** | Análisis de accesibilidad usando Pa11y |
-
-> **Nota**: La tool ESLint ha sido descontinuada y no debe utilizarse.
 
 ## Convenciones de Nomenclatura
 
