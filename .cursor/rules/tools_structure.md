@@ -11,14 +11,18 @@ ToolName/
 ├── index.ts           # Punto de entrada que exporta la funcionalidad pública
 ├── main.ts            # Lógica principal de la tool (registro MCP, handlers)
 ├── adapters/          # Adaptadores para integración con librerías externas
+│   ├── toolname.adapter.ts
 │   └── index.ts
 ├── data/              # Datos estáticos (JSON, configuraciones)
 │   └── index.ts
 ├── normalizers/       # Normalizadores de datos de entrada/salida
+│   ├── toolname.normalizer.ts
 │   └── index.ts
 ├── types/             # Tipos e interfaces TypeScript específicos de la tool
+│   ├── toolname.types.ts    # o múltiples archivos descriptivos
 │   └── index.ts
 └── utils/             # Utilidades y helpers específicos de la tool
+    ├── toolname.utils.ts    # o múltiples archivos descriptivos
     └── index.ts
 ```
 
@@ -42,6 +46,15 @@ ToolName/
 - Los archivos TypeScript usan **kebab-case**: `main.ts`, `index.ts`
 - Cada subcarpeta debe tener un `index.ts` que exporte su contenido público
 - Los archivos de datos JSON usan **kebab-case**: `wcag-criteria.json`
+
+### Convención de Archivos en Subcarpetas
+
+- Usar `toolname.categoria.ts` (punto como separador entre nombre y categoría)
+  - Ejemplos: `pa11y.adapter.ts`, `axe.types.ts`, `contrast.utils.ts`
+- El archivo `index.ts` **solo re-exporta**, nunca contiene lógica
+  - Ejemplo: `export * from './pa11y.adapter.js';`
+- Cuando hay múltiples archivos relacionados, usar nombres descriptivos
+  - Ejemplo en `utils/`: `parsers.ts`, `converters.ts`, `validators.ts`
 
 ## Responsabilidades de Cada Subcarpeta
 
