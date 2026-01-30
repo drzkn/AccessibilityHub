@@ -101,6 +101,23 @@ Compara los resultados de axe-core y Pa11y en https://ejemplo.com
 
 ---
 
+### 6. Análisis de Contraste de Colores
+
+**Prompt:**
+```
+Verifica si los colores de texto de https://mi-sitio.com cumplen con WCAG AA
+```
+
+**¿Qué herramienta se usará?**  
+→ `analyze-contrast`
+
+**Resultado esperado:**
+- Ratio de contraste actual vs requerido
+- Sugerencias de colores que cumplan WCAG
+- Estadísticas por tipo de texto (normal/grande)
+
+---
+
 ## Ejemplos por Herramienta
 
 ### `analyze-with-axe`
@@ -184,6 +201,61 @@ Analiza todos los archivos Vue en src/components/ para problemas de accesibilida
 **Issues esperados:**
 - `no-static-element-interactions`: div no interactivo con evento click
 - Falta de `role="button"` y manejo de teclado
+
+---
+
+### `analyze-contrast`
+
+#### Ejemplo 1: Análisis básico de contraste
+```
+Verifica el contraste de colores de https://example.com
+```
+
+#### Ejemplo 2: Análisis con nivel AAA
+```
+Analiza el contraste de https://example.com con nivel WCAG AAA
+```
+
+**Input equivalente:**
+```json
+{
+  "url": "https://example.com",
+  "options": {
+    "wcagLevel": "AAA"
+  }
+}
+```
+
+#### Ejemplo 3: Análisis de sección específica
+```
+Verifica el contraste solo del header de mi página
+```
+
+**Input equivalente:**
+```json
+{
+  "url": "https://example.com",
+  "options": {
+    "selector": "header",
+    "suggestFixes": true
+  }
+}
+```
+
+#### Ejemplo 4: Incluir elementos que pasan
+```
+Muéstrame el contraste de todos los elementos, incluyendo los que pasan
+```
+
+**Input equivalente:**
+```json
+{
+  "url": "https://example.com",
+  "options": {
+    "includePassingElements": true
+  }
+}
+```
 
 ---
 
@@ -427,6 +499,38 @@ el issue WCAG 1.1.1 (Contenido no textual):
 }
 ```
 
+### 4. Análisis de Contraste con Nivel AAA
+
+Para proyectos que requieren máxima accesibilidad:
+
+```json
+{
+  "url": "https://example.com",
+  "options": {
+    "wcagLevel": "AAA",
+    "suggestFixes": true
+  }
+}
+```
+
+**Ratios requeridos:**
+- **AA:** 4.5:1 (texto normal), 3:1 (texto grande)
+- **AAA:** 7:1 (texto normal), 4.5:1 (texto grande)
+
+### 5. Contraste de Sección Específica
+
+Analiza solo el contraste de una parte de la página:
+
+```json
+{
+  "url": "https://example.com",
+  "options": {
+    "selector": ".hero-section",
+    "includePassingElements": false
+  }
+}
+```
+
 ---
 
 ## Preguntas Frecuentes
@@ -435,6 +539,7 @@ el issue WCAG 1.1.1 (Contenido no textual):
 
 - **Para web deployada:** `analyze-all` (cobertura máxima)
 - **Para código Vue:** `analyze-with-eslint` (rápido, sin browser)
+- **Para verificar colores:** `analyze-contrast` (con sugerencias de corrección)
 
 ### ¿Cómo manejar falsos positivos?
 
