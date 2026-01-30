@@ -1,4 +1,4 @@
-import type { RGB, HSL } from '../types/color-analysis.js';
+import type { RGB, HSL } from '../types/colorAnalysis.type.js';
 
 export function rgbToHsl(rgb: RGB): HSL {
   const r = rgb.r / 255;

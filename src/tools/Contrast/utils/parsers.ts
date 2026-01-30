@@ -1,5 +1,5 @@
-import type { RGB } from '../types/color-analysis.js';
-import { NAMED_COLORS } from '../types/color-analysis.js';
+import type { RGB } from '../types/colorAnalysis.type.js';
+import { NAMED_COLORS } from '../types/colorAnalysis.type.js';
 import { hslToRgb } from './converters.js';
 
 function parseHex(hex: string): RGB | null {

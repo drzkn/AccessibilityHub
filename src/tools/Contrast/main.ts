@@ -1,5 +1,4 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { z } from 'zod';
 import { ContrastAdapter } from './adapters/index.js';
 import { ContrastToolInputSchema, type ContrastToolInput } from './types/index.js';
 import { buildAnalysisTarget, buildAnalysisOptions, formatOutput } from './utils/index.js';
@@ -10,6 +9,7 @@ import {
   createErrorResponse,
   withToolContext,
 } from '../Base/index.js';
+import { ContrastToolMcpInputSchema } from './types/input.type.js';
 
 let sharedAdapter: ContrastAdapter | null = null;
 let currentIgnoreHTTPS = false;
@@ -87,47 +87,6 @@ const handleContrastAnalysis = withToolContext<ContrastToolInput>(
     return createJsonResponse(output, !result.success);
   }
 );
-
-const ContrastToolMcpInputSchema = z.object({
-  url: z.string().url().optional().describe('URL of the page to analyze'),
-  html: z.string().min(1).optional().describe('Raw HTML content to analyze'),
-  options: z
-    .object({
-      wcagLevel: z
-        .enum(['AA', 'AAA'])
-        .default('AA')
-        .describe('WCAG conformance level: AA (4.5:1 normal, 3:1 large) or AAA (7:1 normal, 4.5:1 large)'),
-      suggestFixes: z
-        .boolean()
-        .default(true)
-        .describe('Suggest color corrections for failing elements'),
-      includePassingElements: z
-        .boolean()
-        .default(false)
-        .describe('Include elements that pass contrast requirements in results'),
-      selector: z
-        .string()
-        .optional()
-        .describe('CSS selector to scope analysis to specific element'),
-      browser: z
-        .object({
-          waitForSelector: z.string().optional().describe('CSS selector to wait for'),
-          waitForTimeout: z.number().int().positive().max(60000).optional(),
-          viewport: z
-            .object({
-              width: z.number().int().positive().default(1280),
-              height: z.number().int().positive().default(720),
-            })
-            .optional(),
-          ignoreHTTPSErrors: z
-            .boolean()
-            .default(false)
-            .describe('Ignore HTTPS certificate errors (for local dev servers with self-signed certs)'),
-        })
-        .optional(),
-    })
-    .optional(),
-});
 
 export const analyzeContrastTool: ToolDefinition = {
   name: 'analyze-contrast',

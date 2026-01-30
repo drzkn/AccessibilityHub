@@ -1,4 +1,4 @@
-import { type RGB, WCAG_THRESHOLDS } from '../types/color-analysis.js';
+import { type RGB, WCAG_THRESHOLDS } from '../types/colorAnalysis.type.js';
 import { rgbToHsl, hslToRgb } from './converters.js';
 
 function linearize(value: number): number {

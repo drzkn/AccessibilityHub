@@ -7,7 +7,7 @@ import {
   getRequiredRatio,
   suggestFixedColor,
 } from '../../../../src/tools/Contrast/utils/contrast.js';
-import type { RGB } from '../../../../src/tools/Contrast/types/color-analysis.js';
+import type { RGB } from '../../../../src/tools/Contrast/types/colorAnalysis.type.js';
 
 describe('getLuminance', () => {
   it('should return 1 for white', () => {

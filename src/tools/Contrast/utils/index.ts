@@ -3,7 +3,7 @@ export * from './parsers.js';
 export * from './contrast.js';
 
 import type { AnalysisTarget } from '@/shared/types/analysis.js';
-import type { ContrastToolInput, ContrastAnalysisResult } from '../types/contrast.js';
+import type { ContrastToolInput, ContrastAnalysisResult } from '../types/contrast.type.js';
 
 export interface ContrastToolOutput {
   success: boolean;
