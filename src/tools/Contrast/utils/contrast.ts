@@ -1,29 +1,47 @@
-import { type RGB, WCAG_THRESHOLDS } from '../types/colorAnalysis.type.js';
-import { rgbToHsl, hslToRgb } from './converters.js';
+import Color from 'colorjs.io';
+import {
+  type RGB,
+  type ContrastAlgorithm,
+  WCAG_THRESHOLDS,
+  APCA_THRESHOLDS,
+} from '../types/colorAnalysis.type.js';
 
-function linearize(value: number): number {
-  const normalized = value / 255;
-  return normalized <= 0.03928
-    ? normalized / 12.92
-    : Math.pow((normalized + 0.055) / 1.055, 2.4);
+function rgbToColor(rgb: RGB): Color {
+  return new Color('srgb', [rgb.r / 255, rgb.g / 255, rgb.b / 255]);
+}
+
+function colorToRgb(color: Color): RGB {
+  const srgb = color.to('srgb');
+  return {
+    r: Math.round(Math.max(0, Math.min(255, srgb.coords[0]! * 255))),
+    g: Math.round(Math.max(0, Math.min(255, srgb.coords[1]! * 255))),
+    b: Math.round(Math.max(0, Math.min(255, srgb.coords[2]! * 255))),
+  };
 }
 
 export function getLuminance(rgb: RGB): number {
-  const rLin = linearize(rgb.r);
-  const gLin = linearize(rgb.g);
-  const bLin = linearize(rgb.b);
-
-  return 0.2126 * rLin + 0.7152 * gLin + 0.0722 * bLin;
+  const color = rgbToColor(rgb);
+  return color.luminance;
 }
 
 export function getContrastRatio(fg: RGB, bg: RGB): number {
-  const fgLuminance = getLuminance(fg);
-  const bgLuminance = getLuminance(bg);
+  const fgColor = rgbToColor(fg);
+  const bgColor = rgbToColor(bg);
+  return fgColor.contrast(bgColor, 'WCAG21');
+}
 
-  const lighter = Math.max(fgLuminance, bgLuminance);
-  const darker = Math.min(fgLuminance, bgLuminance);
+export function getAPCAContrast(fg: RGB, bg: RGB): number {
+  const fgColor = rgbToColor(fg);
+  const bgColor = rgbToColor(bg);
+  return fgColor.contrast(bgColor, 'APCA');
+}
 
-  return (lighter + 0.05) / (darker + 0.05);
+export function getContrastByAlgorithm(
+  fg: RGB,
+  bg: RGB,
+  algorithm: ContrastAlgorithm = 'WCAG21'
+): number {
+  return algorithm === 'APCA' ? getAPCAContrast(fg, bg) : getContrastRatio(fg, bg);
 }
 
 export function meetsWCAG(ratio: number, level: 'AA' | 'AAA', isLargeText: boolean): boolean {
@@ -31,6 +49,18 @@ export function meetsWCAG(ratio: number, level: 'AA' | 'AAA', isLargeText: boole
     return isLargeText ? ratio >= WCAG_THRESHOLDS.AA_LARGE : ratio >= WCAG_THRESHOLDS.AA_NORMAL;
   }
   return isLargeText ? ratio >= WCAG_THRESHOLDS.AAA_LARGE : ratio >= WCAG_THRESHOLDS.AAA_NORMAL;
+}
+
+export function meetsAPCA(lightness: number, textType: 'body' | 'large' | 'nonText'): boolean {
+  const absLightness = Math.abs(lightness);
+  switch (textType) {
+    case 'body':
+      return absLightness >= APCA_THRESHOLDS.BODY_TEXT;
+    case 'large':
+      return absLightness >= APCA_THRESHOLDS.LARGE_TEXT;
+    case 'nonText':
+      return absLightness >= APCA_THRESHOLDS.NON_TEXT;
+  }
 }
 
 export function meetsWCAGNonText(ratio: number): boolean {
@@ -52,24 +82,30 @@ export function getRequiredRatio(level: 'AA' | 'AAA', isLargeText: boolean): num
   return isLargeText ? WCAG_THRESHOLDS.AAA_LARGE : WCAG_THRESHOLDS.AAA_NORMAL;
 }
 
-export function suggestFixedColor(fg: RGB, bg: RGB, targetRatio: number): RGB {
-  const bgLuminance = getLuminance(bg);
-  const fgLuminance = getLuminance(fg);
+export function getRequiredAPCALightness(isLargeText: boolean): number {
+  return isLargeText ? APCA_THRESHOLDS.LARGE_TEXT : APCA_THRESHOLDS.BODY_TEXT;
+}
 
-  const fgHsl = rgbToHsl(fg);
+export function suggestFixedColor(fg: RGB, bg: RGB, targetRatio: number): RGB {
+  const fgColor = rgbToColor(fg);
+  const bgColor = rgbToColor(bg);
+
+  const fgOklch = fgColor.to('oklch');
+  const bgLuminance = bgColor.luminance;
+  const fgLuminance = fgColor.luminance;
 
   const shouldDarken = fgLuminance > bgLuminance;
 
   let low = 0;
   let high = 1;
-  let bestL = fgHsl.l;
+  let bestL = fgOklch.coords[0]!;
   let iterations = 0;
   const maxIterations = 50;
 
   while (iterations < maxIterations) {
     const mid = (low + high) / 2;
-    const testHsl = { ...fgHsl, l: mid };
-    const testRgb = hslToRgb(testHsl);
+    const testColor = new Color('oklch', [mid, fgOklch.coords[1]!, fgOklch.coords[2]!]);
+    const testRgb = colorToRgb(testColor);
     const ratio = getContrastRatio(testRgb, bg);
 
     if (Math.abs(ratio - targetRatio) < 0.01) {
@@ -77,7 +113,7 @@ export function suggestFixedColor(fg: RGB, bg: RGB, targetRatio: number): RGB {
       break;
     }
 
-    const testLuminance = getLuminance(testRgb);
+    const testLuminance = testColor.luminance;
 
     if (shouldDarken) {
       if (ratio < targetRatio) {
@@ -107,5 +143,68 @@ export function suggestFixedColor(fg: RGB, bg: RGB, targetRatio: number): RGB {
     iterations++;
   }
 
-  return hslToRgb({ ...fgHsl, l: bestL });
+  const resultColor = new Color('oklch', [bestL, fgOklch.coords[1]!, fgOklch.coords[2]!]);
+  return colorToRgb(resultColor);
+}
+
+export function suggestFixedColorForAPCA(fg: RGB, bg: RGB, targetLightness: number): RGB {
+  const fgColor = rgbToColor(fg);
+  const bgColor = rgbToColor(bg);
+
+  const fgOklch = fgColor.to('oklch');
+  const bgLuminance = bgColor.luminance;
+  const fgLuminance = fgColor.luminance;
+
+  const shouldDarken = fgLuminance > bgLuminance;
+
+  let low = 0;
+  let high = 1;
+  let bestL = fgOklch.coords[0]!;
+  let iterations = 0;
+  const maxIterations = 50;
+
+  while (iterations < maxIterations) {
+    const mid = (low + high) / 2;
+    const testColor = new Color('oklch', [mid, fgOklch.coords[1]!, fgOklch.coords[2]!]);
+    const testRgb = colorToRgb(testColor);
+    const lightness = getAPCAContrast(testRgb, bg);
+    const absLightness = Math.abs(lightness);
+
+    if (Math.abs(absLightness - targetLightness) < 0.5) {
+      bestL = mid;
+      break;
+    }
+
+    const testLuminance = testColor.luminance;
+
+    if (shouldDarken) {
+      if (absLightness < targetLightness) {
+        high = mid;
+      } else {
+        low = mid;
+        bestL = mid;
+      }
+    } else {
+      if (testLuminance > bgLuminance) {
+        if (absLightness < targetLightness) {
+          low = mid;
+        } else {
+          high = mid;
+          bestL = mid;
+        }
+      } else {
+        if (absLightness < targetLightness) {
+          high = mid;
+        } else {
+          low = mid;
+          bestL = mid;
+        }
+      }
+    }
+
+    iterations++;
+  }
+
+  const resultColor = new Color('oklch', [bestL, fgOklch.coords[1]!, fgOklch.coords[2]!]);
+  return colorToRgb(resultColor);
 }
