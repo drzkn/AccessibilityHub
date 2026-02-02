@@ -59,6 +59,10 @@ export const ContrastIssueSchema = AccessibilityIssueSchema.extend({
   contrastData: ContrastDataSchema,
 }).describe('Accessibility issue with contrast-specific data');
 
+export const ContrastAlgorithmSchema = z
+  .enum(['WCAG21', 'APCA'])
+  .describe('Contrast algorithm: WCAG21 (standard) or APCA (WCAG 3.0 draft - experimental)');
+
 export const ContrastToolInputSchema = z
   .object({
     url: UrlSchema.optional(),
@@ -66,6 +70,9 @@ export const ContrastToolInputSchema = z
     options: z
       .object({
         wcagLevel: ContrastWCAGLevelSchema.default('AA').describe('WCAG conformance level to check'),
+        contrastAlgorithm: ContrastAlgorithmSchema.default('WCAG21').describe(
+          'Contrast algorithm: WCAG21 (standard) or APCA (WCAG 3.0 draft - experimental)'
+        ),
         suggestFixes: z
           .boolean()
           .default(true)

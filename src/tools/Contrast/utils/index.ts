@@ -42,6 +42,7 @@ export function buildAnalysisTarget(input: ContrastToolInput): AnalysisTarget {
 
 export interface ContrastBuildOptions {
   wcagLevel: 'AA' | 'AAA';
+  contrastAlgorithm: 'WCAG21' | 'APCA';
   suggestFixes: boolean;
   includePassingElements: boolean;
   selector?: string;
@@ -50,6 +51,7 @@ export interface ContrastBuildOptions {
 export function buildAnalysisOptions(input: ContrastToolInput): ContrastBuildOptions {
   const options: ContrastBuildOptions = {
     wcagLevel: input.options?.wcagLevel ?? 'AA',
+    contrastAlgorithm: input.options?.contrastAlgorithm ?? 'WCAG21',
     suggestFixes: input.options?.suggestFixes ?? true,
     includePassingElements: input.options?.includePassingElements ?? false,
   };

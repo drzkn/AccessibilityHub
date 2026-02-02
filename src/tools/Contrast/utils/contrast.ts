@@ -19,6 +19,23 @@ function colorToRgb(color: Color): RGB {
   };
 }
 
+export function parseColor(colorStr: string): RGB | null {
+  try {
+    const color = new Color(colorStr);
+    return colorToRgb(color);
+  } catch {
+    return null;
+  }
+}
+
+export function rgbToHex(rgb: RGB): string {
+  const toHex = (n: number): string => {
+    const hex = Math.max(0, Math.min(255, Math.round(n))).toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  };
+  return `#${toHex(rgb.r)}${toHex(rgb.g)}${toHex(rgb.b)}`;
+}
+
 export function getLuminance(rgb: RGB): number {
   const color = rgbToColor(rgb);
   return color.luminance;
