@@ -97,6 +97,9 @@ Calculates contrast ratios between text and background colors, validates against
 Input options
 - url: URL of the page to analyze
 - html: Raw HTML content to analyze (alternative to url)
+- options.contrastAlgorithm: Algorithm for contrast calculation. Default: WCAG21
+  - WCAG21: Standard WCAG 2.1 contrast ratio (luminance-based)
+  - APCA: Accessible Perceptual Contrast Algorithm (WCAG 3.0 draft, experimental)
 - options.wcagLevel: WCAG level to check (AA or AAA). Default: AA
   - AA: 4.5:1 for normal text, 3:1 for large text
   - AAA: 7:1 for normal text, 4.5:1 for large text
@@ -112,10 +115,17 @@ Output
   - contrastData: foreground/background colors, current/required ratios, suggested fixes
 - summary: Statistics by text size (normal/large) and pass/fail counts
 - wcagLevel: The WCAG level used for analysis
+- contrastAlgorithm: The algorithm used for contrast calculation (WCAG21 or APCA)
 
 WCAG Criteria
 - 1.4.3 Contrast (Minimum) - Level AA
-- 1.4.6 Contrast (Enhanced) - Level AAA`,
+- 1.4.6 Contrast (Enhanced) - Level AAA
+
+APCA Thresholds (when using APCA algorithm)
+- Body text: Lc 75 minimum
+- Large text: Lc 60 minimum
+- Non-text elements: Lc 45 minimum
+Note: APCA is part of the WCAG 3.0 draft and may change in future versions.`,
 
   register(server: McpServer): void {
     server.tool(
