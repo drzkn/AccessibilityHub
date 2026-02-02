@@ -6,6 +6,14 @@ import {
   isLargeText,
   getRequiredRatio,
   suggestFixedColor,
+  parseColor,
+  rgbToHex,
+  getAPCAContrast,
+  getContrastByAlgorithm,
+  meetsAPCA,
+  getRequiredAPCALightness,
+  suggestFixedColorForAPCA,
+  meetsWCAGNonText,
 } from '../../../../src/tools/Contrast/utils/contrast.js';
 import type { RGB } from '../../../../src/tools/Contrast/types/colorAnalysis.type.js';
 
@@ -160,5 +168,215 @@ describe('suggestFixedColor', () => {
 
     const fixed = suggestFixedColor(black, white, 4.5);
     expect(fixed).toBeDefined();
+  });
+});
+
+describe('parseColor', () => {
+  it('should parse hex colors', () => {
+    expect(parseColor('#ffffff')).toEqual({ r: 255, g: 255, b: 255 });
+    expect(parseColor('#000000')).toEqual({ r: 0, g: 0, b: 0 });
+    expect(parseColor('#ff0000')).toEqual({ r: 255, g: 0, b: 0 });
+  });
+
+  it('should parse short hex colors', () => {
+    expect(parseColor('#fff')).toEqual({ r: 255, g: 255, b: 255 });
+    expect(parseColor('#000')).toEqual({ r: 0, g: 0, b: 0 });
+    expect(parseColor('#f00')).toEqual({ r: 255, g: 0, b: 0 });
+  });
+
+  it('should parse rgb colors', () => {
+    expect(parseColor('rgb(255, 255, 255)')).toEqual({ r: 255, g: 255, b: 255 });
+    expect(parseColor('rgb(0, 0, 0)')).toEqual({ r: 0, g: 0, b: 0 });
+    expect(parseColor('rgb(255, 0, 0)')).toEqual({ r: 255, g: 0, b: 0 });
+  });
+
+  it('should parse named colors', () => {
+    expect(parseColor('white')).toEqual({ r: 255, g: 255, b: 255 });
+    expect(parseColor('black')).toEqual({ r: 0, g: 0, b: 0 });
+    expect(parseColor('red')).toEqual({ r: 255, g: 0, b: 0 });
+  });
+
+  it('should parse hsl colors', () => {
+    const white = parseColor('hsl(0, 0%, 100%)');
+    expect(white).toEqual({ r: 255, g: 255, b: 255 });
+
+    const black = parseColor('hsl(0, 0%, 0%)');
+    expect(black).toEqual({ r: 0, g: 0, b: 0 });
+  });
+
+  it('should return null for invalid colors', () => {
+    expect(parseColor('invalid')).toBeNull();
+    expect(parseColor('not-a-color')).toBeNull();
+  });
+});
+
+describe('rgbToHex', () => {
+  it('should convert RGB to hex', () => {
+    expect(rgbToHex({ r: 255, g: 255, b: 255 })).toBe('#ffffff');
+    expect(rgbToHex({ r: 0, g: 0, b: 0 })).toBe('#000000');
+    expect(rgbToHex({ r: 255, g: 0, b: 0 })).toBe('#ff0000');
+    expect(rgbToHex({ r: 0, g: 255, b: 0 })).toBe('#00ff00');
+    expect(rgbToHex({ r: 0, g: 0, b: 255 })).toBe('#0000ff');
+  });
+
+  it('should pad single digit hex values', () => {
+    expect(rgbToHex({ r: 0, g: 15, b: 8 })).toBe('#000f08');
+  });
+
+  it('should clamp values to valid range', () => {
+    expect(rgbToHex({ r: 300, g: -10, b: 256 })).toBe('#ff00ff');
+  });
+});
+
+describe('getAPCAContrast', () => {
+  it('should return high absolute value for black on white', () => {
+    const black: RGB = { r: 0, g: 0, b: 0 };
+    const white: RGB = { r: 255, g: 255, b: 255 };
+    const contrast = getAPCAContrast(black, white);
+    expect(Math.abs(contrast)).toBeGreaterThan(100);
+  });
+
+  it('should return high absolute value for white on black', () => {
+    const black: RGB = { r: 0, g: 0, b: 0 };
+    const white: RGB = { r: 255, g: 255, b: 255 };
+    const contrast = getAPCAContrast(white, black);
+    expect(Math.abs(contrast)).toBeGreaterThan(100);
+  });
+
+  it('should have opposite signs for dark-on-light vs light-on-dark', () => {
+    const black: RGB = { r: 0, g: 0, b: 0 };
+    const white: RGB = { r: 255, g: 255, b: 255 };
+    const blackOnWhite = getAPCAContrast(black, white);
+    const whiteOnBlack = getAPCAContrast(white, black);
+    expect(blackOnWhite * whiteOnBlack).toBeLessThan(0);
+  });
+
+  it('should return close to 0 for same colors', () => {
+    const gray: RGB = { r: 128, g: 128, b: 128 };
+    const contrast = getAPCAContrast(gray, gray);
+    expect(Math.abs(contrast)).toBeLessThan(1);
+  });
+
+  it('should not be symmetric (unlike WCAG)', () => {
+    const darkGray: RGB = { r: 50, g: 50, b: 50 };
+    const lightGray: RGB = { r: 200, g: 200, b: 200 };
+    const darkOnLight = getAPCAContrast(darkGray, lightGray);
+    const lightOnDark = getAPCAContrast(lightGray, darkGray);
+    expect(Math.abs(darkOnLight)).not.toBe(Math.abs(lightOnDark));
+  });
+});
+
+describe('getContrastByAlgorithm', () => {
+  const black: RGB = { r: 0, g: 0, b: 0 };
+  const white: RGB = { r: 255, g: 255, b: 255 };
+
+  it('should use WCAG21 by default', () => {
+    const result = getContrastByAlgorithm(black, white);
+    expect(result).toBeCloseTo(21, 0);
+  });
+
+  it('should use WCAG21 when specified', () => {
+    const result = getContrastByAlgorithm(black, white, 'WCAG21');
+    expect(result).toBeCloseTo(21, 0);
+  });
+
+  it('should use APCA when specified', () => {
+    const result = getContrastByAlgorithm(black, white, 'APCA');
+    expect(Math.abs(result)).toBeGreaterThan(100);
+  });
+});
+
+describe('meetsAPCA', () => {
+  describe('body text (requires Lc >= 75)', () => {
+    it('should return true for high contrast', () => {
+      expect(meetsAPCA(75, 'body')).toBe(true);
+      expect(meetsAPCA(80, 'body')).toBe(true);
+      expect(meetsAPCA(-75, 'body')).toBe(true);
+      expect(meetsAPCA(-80, 'body')).toBe(true);
+    });
+
+    it('should return false for low contrast', () => {
+      expect(meetsAPCA(74, 'body')).toBe(false);
+      expect(meetsAPCA(50, 'body')).toBe(false);
+      expect(meetsAPCA(-74, 'body')).toBe(false);
+    });
+  });
+
+  describe('large text (requires Lc >= 60)', () => {
+    it('should return true for adequate contrast', () => {
+      expect(meetsAPCA(60, 'large')).toBe(true);
+      expect(meetsAPCA(75, 'large')).toBe(true);
+      expect(meetsAPCA(-60, 'large')).toBe(true);
+    });
+
+    it('should return false for low contrast', () => {
+      expect(meetsAPCA(59, 'large')).toBe(false);
+      expect(meetsAPCA(-59, 'large')).toBe(false);
+    });
+  });
+
+  describe('non-text (requires Lc >= 45)', () => {
+    it('should return true for adequate contrast', () => {
+      expect(meetsAPCA(45, 'nonText')).toBe(true);
+      expect(meetsAPCA(60, 'nonText')).toBe(true);
+      expect(meetsAPCA(-45, 'nonText')).toBe(true);
+    });
+
+    it('should return false for low contrast', () => {
+      expect(meetsAPCA(44, 'nonText')).toBe(false);
+      expect(meetsAPCA(-44, 'nonText')).toBe(false);
+    });
+  });
+});
+
+describe('getRequiredAPCALightness', () => {
+  it('should return 60 for large text', () => {
+    expect(getRequiredAPCALightness(true)).toBe(60);
+  });
+
+  it('should return 75 for normal text', () => {
+    expect(getRequiredAPCALightness(false)).toBe(75);
+  });
+});
+
+describe('meetsWCAGNonText', () => {
+  it('should require 3:1 ratio for non-text elements', () => {
+    expect(meetsWCAGNonText(3.0)).toBe(true);
+    expect(meetsWCAGNonText(4.5)).toBe(true);
+    expect(meetsWCAGNonText(2.99)).toBe(false);
+  });
+});
+
+describe('suggestFixedColorForAPCA', () => {
+  it('should suggest a color that meets the target APCA lightness', () => {
+    const lightGray: RGB = { r: 150, g: 150, b: 150 };
+    const white: RGB = { r: 255, g: 255, b: 255 };
+    const targetLightness = 75;
+
+    const fixed = suggestFixedColorForAPCA(lightGray, white, targetLightness);
+    const newLightness = Math.abs(getAPCAContrast(fixed, white));
+
+    expect(newLightness).toBeGreaterThanOrEqual(targetLightness - 1);
+  });
+
+  it('should darken light text on light background', () => {
+    const lightGray: RGB = { r: 200, g: 200, b: 200 };
+    const white: RGB = { r: 255, g: 255, b: 255 };
+
+    const fixed = suggestFixedColorForAPCA(lightGray, white, 75);
+    const fixedLuminance = getLuminance(fixed);
+    const originalLuminance = getLuminance(lightGray);
+
+    expect(fixedLuminance).toBeLessThan(originalLuminance);
+  });
+
+  it('should work for colors that already meet the target', () => {
+    const black: RGB = { r: 0, g: 0, b: 0 };
+    const white: RGB = { r: 255, g: 255, b: 255 };
+
+    const fixed = suggestFixedColorForAPCA(black, white, 60);
+    expect(fixed).toBeDefined();
+    const newLightness = Math.abs(getAPCAContrast(fixed, white));
+    expect(newLightness).toBeGreaterThanOrEqual(60);
   });
 });
