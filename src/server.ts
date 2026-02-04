@@ -13,7 +13,8 @@ import {
 } from "@/tools/index.js";
 import {
   fullAccessibilityAuditPrompt,
-  quickAccessibilityCheckPrompt
+  quickAccessibilityCheckPrompt,
+  contrastCheckPrompt
 } from "@/prompts/index.js";
 
 const server = new McpServer({
@@ -38,7 +39,8 @@ function registerTools(): void {
 function registerPrompts(): void {
   const prompts = [
     fullAccessibilityAuditPrompt,
-    quickAccessibilityCheckPrompt
+    quickAccessibilityCheckPrompt,
+    contrastCheckPrompt
   ];
 
   for (const prompt of prompts) {
@@ -51,7 +53,7 @@ async function main(): Promise<void> {
   logger.info('Starting AccesibilityHub Server', {
     version: APP_VERSION,
     tools: ['analyze-with-axe', 'analyze-with-pa11y', 'analyze-mixed', 'analyze-contrast'],
-    prompts: ['full-accessibility-audit', 'quick-accessibility-check']
+    prompts: ['full-accessibility-audit', 'quick-accessibility-check', 'contrast-check']
   });
 
   registerTools();
