@@ -8,10 +8,6 @@ const argsSchema = {
     .enum(['A', 'AA', 'AAA'])
     .optional()
     .describe('WCAG conformance level (default: AA)'),
-  language: z
-    .string()
-    .optional()
-    .describe('Language for the output report (e.g., "Spanish", "English", "French")')
 };
 
 type FullAuditArgs = {
@@ -34,18 +30,14 @@ export const fullAccessibilityAuditPrompt: PromptDefinition = {
         description: this.description,
         argsSchema
       },
-      async ({ url, wcagLevel = 'AA', language }: FullAuditArgs): Promise<PromptResult> => {
-        const languageInstruction = language
-          ? `\n\n**Important:** Provide the entire report in ${language}.`
-          : '';
-
+      async ({ url, wcagLevel = 'AA' }: FullAuditArgs): Promise<PromptResult> => {
         return {
           messages: [
             {
               role: 'user',
               content: {
                 type: 'text',
-                text: `Perform a comprehensive accessibility audit of ${url}.${languageInstruction}
+                text: `Perform a comprehensive accessibility audit of ${url}.
 
 Use the analyze-mixed tool with these parameters:
 - url: "${url}"

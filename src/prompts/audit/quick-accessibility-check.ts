@@ -4,10 +4,6 @@ import type { PromptDefinition, PromptResult } from '../types/index.js';
 
 const argsSchema = {
   url: z.string().url().describe('URL of the page to analyze'),
-  language: z
-    .string()
-    .optional()
-    .describe('Language for the output report (e.g., "Spanish", "English", "French")')
 };
 
 type QuickCheckArgs = {
@@ -28,18 +24,14 @@ export const quickAccessibilityCheckPrompt: PromptDefinition = {
         description: this.description,
         argsSchema
       },
-      async ({ url, language }: QuickCheckArgs): Promise<PromptResult> => {
-        const languageInstruction = language
-          ? `\n\n**Important:** Provide the entire report in ${language}.`
-          : '';
-
+      async ({ url }: QuickCheckArgs): Promise<PromptResult> => {
         return {
           messages: [
             {
               role: 'user',
               content: {
                 type: 'text',
-                text: `Perform a quick accessibility check of ${url}.${languageInstruction}
+                text: `Perform a quick accessibility check of ${url}.
 
 Use the axe-core tool with these parameters:
 - url: "${url}"
