@@ -16,7 +16,8 @@ import {
   quickAccessibilityCheckPrompt,
   contrastCheckPrompt,
   preDeployCheckPrompt,
-  quickWinsReportPrompt
+  quickWinsReportPrompt,
+  explainWcagCriterionPrompt
 } from "@/prompts/index.js";
 
 const server = new McpServer({
@@ -44,7 +45,8 @@ function registerPrompts(): void {
     quickAccessibilityCheckPrompt,
     contrastCheckPrompt,
     preDeployCheckPrompt,
-    quickWinsReportPrompt
+    quickWinsReportPrompt,
+    explainWcagCriterionPrompt
   ];
 
   for (const prompt of prompts) {
@@ -62,7 +64,8 @@ async function main(): Promise<void> {
       'quick-accessibility-check',
       'contrast-check',
       'pre-deploy-check',
-      'quick-wins-report'
+      'quick-wins-report',
+      'explain-wcag-criterion'
     ]
   });
 
