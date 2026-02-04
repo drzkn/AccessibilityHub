@@ -14,7 +14,9 @@ import {
 import {
   fullAccessibilityAuditPrompt,
   quickAccessibilityCheckPrompt,
-  contrastCheckPrompt
+  contrastCheckPrompt,
+  preDeployCheckPrompt,
+  quickWinsReportPrompt
 } from "@/prompts/index.js";
 
 const server = new McpServer({
@@ -40,7 +42,9 @@ function registerPrompts(): void {
   const prompts = [
     fullAccessibilityAuditPrompt,
     quickAccessibilityCheckPrompt,
-    contrastCheckPrompt
+    contrastCheckPrompt,
+    preDeployCheckPrompt,
+    quickWinsReportPrompt
   ];
 
   for (const prompt of prompts) {
@@ -53,7 +57,13 @@ async function main(): Promise<void> {
   logger.info('Starting AccesibilityHub Server', {
     version: APP_VERSION,
     tools: ['analyze-with-axe', 'analyze-with-pa11y', 'analyze-mixed', 'analyze-contrast'],
-    prompts: ['full-accessibility-audit', 'quick-accessibility-check', 'contrast-check']
+    prompts: [
+      'full-accessibility-audit',
+      'quick-accessibility-check',
+      'contrast-check',
+      'pre-deploy-check',
+      'quick-wins-report'
+    ]
   });
 
   registerTools();
