@@ -12,8 +12,7 @@
     "dist",
     "README.md",
     "LICENSE",
-    "USAGE.md",
-    "EXAMPLES.md"
+    "docs"
   ],
   "scripts": {
     "prebuild": "node scripts/check-node-version.js",
