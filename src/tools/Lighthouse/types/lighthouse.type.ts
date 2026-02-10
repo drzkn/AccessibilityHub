@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { WCAGLevelSchema } from '@/shared/types/accessibility.js';
 import type { AnalysisResult } from '@/shared/types/accessibility.js';
+import type { AdapterConfig } from '@/shared/adapters/base.js';
 
 const ViewportSchema = z
   .object({
@@ -59,4 +60,50 @@ export interface LighthouseAuditMapping {
   wcagLevel: 'A' | 'AA' | 'AAA';
   wcagPrinciple: 'perceivable' | 'operable' | 'understandable' | 'robust';
   title: string;
+}
+
+export interface LighthouseAdapterConfig extends AdapterConfig {
+  headless?: boolean;
+  browserArgs?: string[];
+  ignoreHTTPSErrors?: boolean;
+}
+
+export interface LighthouseAuditDetail {
+  items?: Array<{
+    node?: {
+      selector?: string;
+      snippet?: string;
+      path?: string;
+      explanation?: string;
+    };
+    [key: string]: unknown;
+  }>;
+  [key: string]: unknown;
+}
+
+export interface LighthouseAudit {
+  id: string;
+  title: string;
+  description: string;
+  score: number | null;
+  scoreDisplayMode?: string;
+  details?: LighthouseAuditDetail;
+}
+
+export interface LighthouseCategory {
+  score: number | null;
+  auditRefs: Array<{ id: string; weight: number }>;
+}
+
+export interface LighthouseRunnerResult {
+  lhr: {
+    categories: {
+      accessibility?: LighthouseCategory;
+    };
+    audits: Record<string, LighthouseAudit>;
+    lighthouseVersion: string;
+    userAgent?: string;
+    finalDisplayedUrl?: string;
+    fetchTime?: string;
+  };
 }
