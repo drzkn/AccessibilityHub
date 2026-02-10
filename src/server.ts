@@ -6,10 +6,12 @@ import {
   analyzeWithPa11yTool,
   analyzeMixedTool,
   analyzeContrastTool,
+  analyzeWithLighthouseTool,
   disposeAxeAdapter,
   disposePa11yAdapter,
   disposeAnalyzeMixedAdapters,
-  disposeContrastAdapter
+  disposeContrastAdapter,
+  disposeLighthouseAdapter
 } from "@/tools/index.js";
 import {
   fullAccessibilityAuditPrompt,
@@ -38,6 +40,9 @@ function registerTools(): void {
 
   analyzeContrastTool.register(server);
   logger.info('Registered tool: analyze-contrast');
+
+  analyzeWithLighthouseTool.register(server);
+  logger.info('Registered tool: analyze-with-lighthouse');
 }
 
 function registerPrompts(): void {
@@ -67,7 +72,7 @@ function registerResources(): void {
 async function main(): Promise<void> {
   logger.info('Starting AccesibilityHub Server', {
     version: APP_VERSION,
-    tools: ['analyze-with-axe', 'analyze-with-pa11y', 'analyze-mixed', 'analyze-contrast'],
+    tools: ['analyze-with-axe', 'analyze-with-pa11y', 'analyze-mixed', 'analyze-contrast', 'analyze-with-lighthouse'],
     prompts: [
       'full-accessibility-audit',
       'quick-accessibility-check',
@@ -104,7 +109,8 @@ async function shutdown(): Promise<void> {
     disposeAxeAdapter(),
     disposePa11yAdapter(),
     disposeAnalyzeMixedAdapters(),
-    disposeContrastAdapter()
+    disposeContrastAdapter(),
+    disposeLighthouseAdapter()
   ]);
 
   logger.info('All adapters disposed');
