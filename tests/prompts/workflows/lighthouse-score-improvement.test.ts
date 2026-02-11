@@ -34,7 +34,7 @@ describe('lighthouse-score-improvement Prompt', () => {
     expect(prompt?.argsSchema).toHaveProperty('targetScore');
   });
 
-  it('should generate improvement plan with default targetScore, phased structure, and all sections', async () => {
+  it('should generate full improvement plan with default targetScore and all sections', async () => {
     const testUrl = 'https://example.com';
     const result = await promptHandler({ url: testUrl });
 
@@ -49,11 +49,17 @@ describe('lighthouse-score-improvement Prompt', () => {
     expect(text).toContain('90/100');
     expect(text).toContain('Current State');
     expect(text).toContain('Score Impact Analysis');
+    expect(text).toContain('Weight/Impact');
+    expect(text).toContain('Affected Elements');
     expect(text).toContain('Phase 1: Critical Fixes');
     expect(text).toContain('Phase 2: Important Fixes');
     expect(text).toContain('Phase 3: Final Polish');
     expect(text).toContain('Estimated score gain');
+    expect(text).toContain('Audits That Need Manual Review');
+    expect(text).toContain('Progress Tracking');
     expect(text).toContain('Score Improvement Checklist');
+    expect(text).toContain(`Checklist for ${testUrl}`);
+    expect(text).toContain('Target: 90/100');
     expect(text).toContain('- [ ]');
     expect(text).toContain('Beyond the Target');
     expect(text).toContain('axe-core');

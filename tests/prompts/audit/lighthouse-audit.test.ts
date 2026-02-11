@@ -34,7 +34,7 @@ describe('lighthouse-audit Prompt', () => {
     expect(prompt?.argsSchema).toHaveProperty('wcagLevel');
   });
 
-  it('should generate prompt with default wcagLevel AA and required instructions', async () => {
+  it('should generate prompt with default wcagLevel AA, all report sections, and complementary tools', async () => {
     const testUrl = 'https://test-site.com';
     const result = await promptHandler({ url: testUrl });
 
@@ -49,12 +49,19 @@ describe('lighthouse-audit Prompt', () => {
     expect(text).toContain('analyze-with-lighthouse');
     expect(text).toContain('Accessibility Score');
     expect(text).toContain('Failed Audits');
+    expect(text).toContain('Audits That Need Manual Review');
     expect(text).toContain('Score Improvement Roadmap');
+    expect(text).toContain('Quick Wins');
+    expect(text).toContain('Medium Effort');
+    expect(text).toContain('Larger Refactors');
+    expect(text).toContain('Top 3 actions');
     expect(text).toContain('Poor');
     expect(text).toContain('Good');
+    expect(text).toContain('axe-core');
+    expect(text).toContain('Pa11y');
   });
 
-  it('should respect provided wcagLevel parameter', async () => {
+  it('should respect provided wcagLevel parameter in tool call and criterion references', async () => {
     const resultA = await promptHandler({ url: 'https://example.com', wcagLevel: 'A' });
     const resultAAA = await promptHandler({ url: 'https://example.com', wcagLevel: 'AAA' });
 
@@ -62,5 +69,6 @@ describe('lighthouse-audit Prompt', () => {
     const textAAA = (resultAAA.messages[0]?.content as { type: 'text'; text: string }).text;
     expect(textA).toContain('"A"');
     expect(textAAA).toContain('AAA');
+    expect(textAAA).toContain('WCAG AAA criterion');
   });
 });
