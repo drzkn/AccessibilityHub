@@ -1,3 +1,4 @@
+export { registerLighthouseResources } from './lighthouse.resources.js';
 export {
   getAllAudits,
   getAuditById,

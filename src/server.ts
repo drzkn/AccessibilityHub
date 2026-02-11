@@ -21,7 +21,7 @@ import {
   quickWinsReportPrompt,
   explainWcagCriterionPrompt
 } from "@/prompts/index.js";
-import { registerWcagResources, registerContrastResources } from "@/resources/index.js";
+import { registerWcagResources, registerContrastResources, registerLighthouseResources } from "@/resources/index.js";
 
 const server = new McpServer({
   name: 'AccesibilityHub',
@@ -67,6 +67,9 @@ function registerResources(): void {
 
   registerContrastResources(server);
   logger.info('Registered contrast resources');
+
+  registerLighthouseResources(server);
+  logger.info('Registered Lighthouse resources');
 }
 
 async function main(): Promise<void> {
@@ -88,7 +91,11 @@ async function main(): Promise<void> {
       'wcag://criteria/principle/{principle}',
       'contrast://thresholds/wcag21',
       'contrast://thresholds/apca',
-      'contrast://algorithms'
+      'contrast://algorithms',
+      'lighthouse://audits',
+      'lighthouse://audits/{auditId}',
+      'lighthouse://audits/level/{level}',
+      'lighthouse://audits/principle/{principle}'
     ]
   });
 
