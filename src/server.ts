@@ -15,6 +15,7 @@ import {
 } from "@/tools/index.js";
 import {
   fullAccessibilityAuditPrompt,
+  lighthouseAuditPrompt,
   quickAccessibilityCheckPrompt,
   contrastCheckPrompt,
   preDeployCheckPrompt,
@@ -48,6 +49,7 @@ function registerTools(): void {
 function registerPrompts(): void {
   const prompts = [
     fullAccessibilityAuditPrompt,
+    lighthouseAuditPrompt,
     quickAccessibilityCheckPrompt,
     contrastCheckPrompt,
     preDeployCheckPrompt,
