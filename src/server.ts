@@ -20,6 +20,7 @@ import {
   contrastCheckPrompt,
   preDeployCheckPrompt,
   quickWinsReportPrompt,
+  lighthouseScoreImprovementPrompt,
   explainWcagCriterionPrompt
 } from "@/prompts/index.js";
 import { registerWcagResources, registerContrastResources, registerLighthouseResources } from "@/resources/index.js";
@@ -54,6 +55,7 @@ function registerPrompts(): void {
     contrastCheckPrompt,
     preDeployCheckPrompt,
     quickWinsReportPrompt,
+    lighthouseScoreImprovementPrompt,
     explainWcagCriterionPrompt
   ];
 
@@ -84,6 +86,7 @@ async function main(): Promise<void> {
       'contrast-check',
       'pre-deploy-check',
       'quick-wins-report',
+      'lighthouse-score-improvement',
       'explain-wcag-criterion'
     ],
     resources: [
