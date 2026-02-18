@@ -25,9 +25,23 @@ import {
 } from "@/prompts/index.js";
 import { registerWcagResources, registerContrastResources, registerLighthouseResources } from "@/resources/index.js";
 
+const REPO_RAW_URL = 'https://raw.githubusercontent.com/drzkn/A-I-ccesibility/main';
+
 const server = new McpServer({
   name: 'AccesibilityHub',
-  version: APP_VERSION
+  version: APP_VERSION,
+  icons: [
+    {
+      src: `${REPO_RAW_URL}/assets/logo_light.svg`,
+      mimeType: 'image/svg+xml',
+      theme: 'light',
+    },
+    {
+      src: `${REPO_RAW_URL}/assets/logo_dark.svg`,
+      mimeType: 'image/svg+xml',
+      theme: 'dark',
+    },
+  ],
 });
 
 function registerTools(): void {
